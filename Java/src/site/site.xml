@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project 
+	name="Patrodyne Site Demo" 
+	xmlns="http://maven.apache.org/DECORATION/1.1.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.1.0 http://maven.apache.org/xsd/decoration-1.1.0.xsd"
+>
+	<skin>
+		<groupId>org.patrodyne</groupId>
+		<artifactId>patrodyne-site-skin</artifactId>
+		<version>1.0.2</version>
+	</skin>
+
+	<bannerLeft>
+		<name>Patrodyne Site Demo</name>
+		<src>images/logos/ScriptingJava.png</src>
+		<href>http://patrodyne.org/sites/site-demo/index.html</href>
+	</bannerLeft>
+
+	<bannerRight>
+		<name>FlattrCounterCompact</name>
+		<src>http://api.flattr.com/button/flattr-badge-large.png</src>
+		<href>http://flattr.com/thing/446287/Patrodyne</href>
+		<alt>http://patrodyne.org/</alt>
+	</bannerRight>
+
+	<poweredBy>
+		<logo name="Maven" href="http://maven.apache.org/" img="http://maven.apache.org/images/logos/maven-feather.png"/>
+		<logo name="GitHub" href="https://github.com/patrodyne/patrodyne-site/tree/master/demo" img="https://github.com/github/media/blob/master/logos/github_logo_social_coding_outlined.png?raw=true" width="90" height="30"/>
+		<logo name="Flattr" href="http://flattr.com/thing/446287/Patrodyne" img="http://api.flattr.com/button/flattr-badge-large.png"/>
+		<logo name="CoolText" href="http://cooltext.com" img="http://cooltext.com/images/ct_pixel.gif" width="80" height="15"/>
+		<logo name="LGPLv3" href="license.html" img="http://www.gnu.org/graphics/lgplv3-88x31.png"/>
+	</poweredBy>
+	
+	<body>
+		<!-- <head/> -->
+
+		<links>
+			<item name="sitemap" href="sitemap.html" />
+		</links>
+
+		<menu name="Overview">
+			<item name="Introduction" href="index.html" collapse="true">
+				<item name="Usage" href="index.html#Usage">
+					<item name="Direct" href="index.html#Direct"/>
+					<item name="Embedded" href="index.html#Embedded"/>
+				</item>
+			</item>
+			<item name="FAQ" href="faq.html"/>
+		</menu>
+
+		<menu name="Scripting">
+			<item name="Reference" href="Reference.html" collapse="true">
+				<item name="JSR-223" href="http://jcp.org/aboutJava/communityprocess/final/jsr223/index.html"/>
+				<item name="Programmer Guide" href="http://docs.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html"/>
+				<item name="Implementation" href="http://www.koders.com/java/fid9438BFE9425E81B41D13D21A1C7124DD5366E484.aspx"/>
+			</item>
+		</menu>
+
+		<menu name="Download">
+<!-- 
+			<item name="Artifacts" href="http://search.maven.org/#search|ga|1|a%3A%22patrodyne-scripting-Java%22"/>
+-->
+			<item name="Tarball" href="https://github.com/patrodyne/patrodyne-scripting/tarball/master"/>
+			<item name="Zipball" href="https://github.com/patrodyne/patrodyne-scripting/zipball/master"/>
+		</menu>
+
+		<menu ref="reports"/>
+
+		<menu name="Powered By"/>
+
+		<!-- <footer/> -->
+	</body>
+</project>
+<!-- vi:set tabstop=4 hardtabs=4 shiftwidth=4: -->

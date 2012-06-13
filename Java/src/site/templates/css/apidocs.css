@@ -1,0 +1,50 @@
+/* Javadoc style sheet */
+
+/* Define colors, fonts and other style attributes here to override the defaults */
+
+/* Page background color */
+body {
+	font-family: "Georgia", "Century Schoolbook L", serif;
+	font-size: 1.00em; 
+	background-color: @clr.complement-5@; 
+	color:#000000
+}
+
+/* Fixed width items */
+code, pre, .source { font-family: "Lucida Console", "Monaco", "DejaVu Sans Mono", monospace; }
+tt { font-family : "Courier New", "Nimbus Mono L", monospace; }
+
+/* Links */
+a {	text-decoration: none;}
+a:active, a:hover, a.externalLink:active, a.externalLink:hover { text-decoration:underline; }
+a[name] { text-decoration:none; }
+a:link    { color: @clr.secondary-a-1@; }
+a:visited { color: @clr.secondary-a-3@; font-style: italic; }
+
+/* Headings */
+h1 { font-size: 1.50em }
+h2 { font-size: 1.40em }
+h3 { font-size: 1.30em }
+h4 { font-size: 1.20em }
+h5 { font-size: 1.10em }
+h6 { font-size: 1.00em }
+
+/* Table colors */
+.TableHeadingColor    { background: @clr.secondary-b-1@; color:#000000 }
+.TableSubHeadingColor { background: @clr.secondary-b-4@; color:#000000 }
+.TableRowColor        { background: @clr.secondary-b-5@; color:#000000 }
+
+/* Font used in left-hand frame lists */
+.FrameTitleFont   { font-size: 1.00em; font-family: "Lucida Sans Unicode", "Lucida Grande", "Verdana", "Geneva", "DejaVu Sans", sans-serif; color:#000000 }
+.FrameHeadingFont { font-size: 0.95em; font-family: "Lucida Sans Unicode", "Lucida Grande", "Verdana", "Geneva", "DejaVu Sans", sans-serif; color:#000000 }
+.FrameItemFont    { font-size: 0.95em; font-family: "Lucida Sans Unicode", "Lucida Grande", "Verdana", "Geneva", "DejaVu Sans", sans-serif; color:#000000 }
+
+/* Navigation bar fonts and colors */
+.NavBarCell1    { background-color: @clr.primary-4@; color:#000000} /* Light */
+.NavBarCell1Rev { background-color: @clr.primary-3@; color:#FFFFFF} /* Dark */
+.NavBarFont1    { font-family: "Lucida Sans Unicode", "Lucida Grande", "Verdana", "Geneva", "DejaVu Sans", sans-serif; color:#000000; }
+.NavBarFont1Rev { font-family: "Lucida Sans Unicode", "Lucida Grande", "Verdana", "Geneva", "DejaVu Sans", sans-serif; color:#FFFFFF; }
+
+.NavBarCell2    { font-family: "Lucida Sans Unicode", "Lucida Grande", "Verdana", "Geneva", "DejaVu Sans", sans-serif; background-color: @clr.primary-5@; color:#000000 }
+.NavBarCell3    { font-family: "Lucida Sans Unicode", "Lucida Grande", "Verdana", "Geneva", "DejaVu Sans", sans-serif; background-color: @clr.primary-5@; color:#000000 }
+

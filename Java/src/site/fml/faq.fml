@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<faqs 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns="http://maven.apache.org/FML/1.0.1"
+	xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
+	id="General FAQ"
+>
+	<part id="General">
+		<faq id="donate">
+			<question>How can I support open source development at Patrodyne?</question>
+			<answer>
+				<p>
+					If you wish to support open source software at Patrodyne,
+					please Flattr us by clicking the button on the top of this
+					page. We appreciate your support!
+				</p>
+				<p>
+					Thanks for supporting Patrodyne and open source software development.
+				</p>
+			</answer>
+		</faq>
+	</part>
+</faqs>
+<!-- vi:set tabstop=4 hardtabs=4 shiftwidth=4: -->

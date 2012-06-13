@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.patrodyne</groupId>
+		<artifactId>patrodyne-scripting</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<groupId>org.patrodyne</groupId>
+	<artifactId>patrodyne-scripting-java</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<properties>
+		<patrodyne.home>${basedir}/../../patrodyne.github.com</patrodyne.home>
+		<site.home>${patrodyne.home}/sites/scripting-Java</site.home>
+	</properties>
+
+	<name>ScriptingJava</name>
+	<url>http://patrodyne.org/sites/scripting-Java</url>
+	<inceptionYear>2012</inceptionYear>
+
+	<description>Scripting engine for Java code, per JSR-223.</description>
+
+	<scm>
+		<url>https://github.com/patrodyne/patrodyne-scripting/tree/master/Java</url>
+	</scm>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>org.patrodyne.scripting.java.Execute</mainClass>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>${libdir}/</classpathPrefix>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>release-sub-module</id>
+						<goals>
+							<goal>perform</goal>
+						</goals>
+						<configuration>
+							<pomFileName>Java/pom.xml</pomFileName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
+<!-- vi:set tabstop=4 hardtabs=4 shiftwidth=4: -->
