@@ -89,7 +89,7 @@ Linux:
 
 Windows:
 
-    java -jar %{HOME}\lib\patrodyne-scripting-java-X.X.X.jar %*
+    java -jar %HOME%\lib\patrodyne-scripting-java-X.X.X.jar %*
 +--------------------------------------------------------------------
 
 	By specifying the JAR with a fully qualified path, you can run a Java source
