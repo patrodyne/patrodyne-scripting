@@ -37,7 +37,7 @@
 
 	<licenses>
 		<license>
-			<name>LGPL v3</name>
+			<name>GNU Lesser General Public License</name>
 			<distribution>repo and manual</distribution>
 			<url>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</url>
 		</license>
