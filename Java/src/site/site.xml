@@ -59,10 +59,7 @@
 		</menu>
 
 		<menu name="Download">
-<!-- 
-			<item name="Artifacts" href="http://search.maven.org/#search|ga|1|a%3A%22patrodyne-scripting-Java%22"/>
--->
-			<item name="Artifacts" href="https://oss.sonatype.org/content/repositories/snapshots/org/patrodyne/patrodyne-scripting-java/1.0.0-SNAPSHOT/"/>
+			<item name="Artifacts" href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22patrodyne-scripting-java%22"/>
 			<item name="Tarball" href="https://github.com/patrodyne/patrodyne-scripting/tarball/master"/>
 			<item name="Zipball" href="https://github.com/patrodyne/patrodyne-scripting/zipball/master"/>
 		</menu>
