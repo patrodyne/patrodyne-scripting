@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.patrodyne</groupId>
 		<artifactId>patrodyne-scripting</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.patrodyne</groupId>
 	<artifactId>patrodyne-scripting-java</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<properties>
 		<patrodyne.home>${basedir}/../../patrodyne.github.com</patrodyne.home>
