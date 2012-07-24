@@ -167,48 +167,45 @@ public class JavaCodeScriptEngine
 		// create a ClassLoader to load classes from MemoryJavaFileManager
 		MemoryClassLoader loader = 
 			new MemoryClassLoader(memoryMap, classPath, getParentLoader(ctx));
-		
-		String mainClassName = getMainClassName(ctx);
-		if (mainClassName != null)
+		try
 		{
 			try
 			{
-				Class<?> clazz = loader.load(mainClassName);
-				Method mainMethod = findMainMethod(clazz);
-				if (mainMethod == null)
-					throw new ScriptException("no main method in " + mainClassName);
-				return clazz;
+				String mainClassName = getMainClassName(ctx);
+				if (mainClassName != null)
+				{
+					Class<?> clazz = loader.load(mainClassName);
+					Method mainMethod = findMainMethod(clazz);
+					if (mainMethod == null)
+						throw new ScriptException("no main method in " + mainClassName);
+					return clazz;
+				}
+				
+				// No main class configured - load all compiled classes
+				Iterable<Class<?>> classes = loader.loadAll();
+				// search for class with main method
+				Class<?> c = findMainClass(classes);
+				if (c != null)
+					return c;
+				else
+				{
+					// if class with "main" method, then
+					// return first class
+					Iterator<Class<?>> itr = classes.iterator();
+					if (itr.hasNext())
+						return itr.next();
+					else
+						return null;
+				}
 			}
-			catch (ClassNotFoundException cnfe)
+			finally
 			{
-				throw new ScriptException(cnfe);
+				loader.close();
 			}
 		}
-		
-		// no main class configured - load all compiled classes
-		Iterable<Class<?>> classes;
-		try
+		catch (Exception ex)
 		{
-			classes = loader.loadAll();
-		}
-		catch (ClassNotFoundException exp)
-		{
-			throw new ScriptException(exp);
-		}
-		
-		// search for class with main method
-		Class<?> c = findMainClass(classes);
-		if (c != null)
-			return c;
-		else
-		{
-			// if class with "main" method, then
-			// return first class
-			Iterator<Class<?>> itr = classes.iterator();
-			if (itr.hasNext())
-				return itr.next();
-			else
-				return null;
+			throw new ScriptException(ex);
 		}
 	}
 
