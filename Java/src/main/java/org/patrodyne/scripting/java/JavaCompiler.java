@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.script.ScriptException;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -38,11 +39,16 @@ public class JavaCompiler
 	 * Gets the Java™ programming language compiler provided with this platform.
 	 * 
 	 * @return The compiler provided with this platform or null if no compiler is provided
+	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	protected javax.tools.JavaCompiler getSystemJavaCompiler()
+	protected javax.tools.JavaCompiler getSystemJavaCompiler() throws ScriptException
 	{
 		if ( systemJavaCompiler == null )
+		{
 			systemJavaCompiler = ToolProvider.getSystemJavaCompiler();
+			if ( systemJavaCompiler == null )
+				throw new ScriptException("Java compiler not available. Are you using a JRE instead of a JDK?");
+		}
 		return systemJavaCompiler;
 	}
 
@@ -54,8 +60,9 @@ public class JavaCompiler
 	 * signaled with the appropriate exceptions.
 	 * 
 	 * @return A Java file manager tool.
+	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	protected StandardJavaFileManager getStandardFileManager()
+	protected StandardJavaFileManager getStandardFileManager() throws ScriptException
 	{
 		if ( standardFileManager == null)
 			standardFileManager = getSystemJavaCompiler().getStandardFileManager(null, null, null);
@@ -69,8 +76,9 @@ public class JavaCompiler
 	 * @param source Java source as String
 	 * 
 	 * @return A memory map of class name and byte code pairs.
+	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	public Map<String, byte[]> compile(String fileName, String source)
+	public Map<String, byte[]> compile(String fileName, String source) throws ScriptException
 	{
 		PrintWriter err = new PrintWriter(System.err);
 		return compile(source, fileName, err, null, null);
@@ -84,8 +92,9 @@ public class JavaCompiler
 	 * @param err error writer where diagnostic messages are written
 	 * 
 	 * @return A memory map of class name and byte code pairs.
+	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	public Map<String, byte[]> compile(String fileName, String source, Writer err)
+	public Map<String, byte[]> compile(String fileName, String source, Writer err) throws ScriptException
 	{
 		return compile(fileName, source, err, null, null);
 	}
@@ -99,8 +108,9 @@ public class JavaCompiler
 	 * @param sourcePath location of additional .java source files
 	 * 
 	 * @return A memory map of class name and byte code pairs.
+	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	public Map<String, byte[]> compile(String fileName, String source, Writer err, String sourcePath)
+	public Map<String, byte[]> compile(String fileName, String source, Writer err, String sourcePath) throws ScriptException
 	{
 		return compile(fileName, source, err, sourcePath, null);
 	}
@@ -117,8 +127,9 @@ public class JavaCompiler
 	 * @param classPath The location of additional .class files.
 	 * 
 	 * @return A memory map of class name and byte code pairs or null when compilation fails.
+	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	public Map<String, byte[]> compile(String sourceName, String source, Writer err, String sourcePath, String classPath)
+	public Map<String, byte[]> compile(String sourceName, String source, Writer err, String sourcePath, String classPath) throws ScriptException
 	{
 		// A) Create a new memory JavaFileManager
 		MemoryJavaFileManager<StandardJavaFileManager> javaFileManager = 
