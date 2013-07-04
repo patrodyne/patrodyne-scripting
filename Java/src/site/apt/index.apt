@@ -160,4 +160,24 @@ class HelloWorld
 	
 	[]
 
+** {Utility}
+
+	To run Java programs from the command line, 
+	
+	[[1]] put patrodyne-scripting-java-X.X.X.jar into your ~/lib path,
+	
+	[[2]] add this script to your ~/bin path, 
+	
+	[[3]] name it psj.
+
+	[]
+
++---------------------------------------------------
+#!/bin/sh
+# Patrodyne's Scripting Engine for Java
+java -Dorg.patrodyne.scripting.java.classpath="." \
+  -jar ~/lib/patrodyne-scripting-java-X.X.X.jar $*
+# vi:set tabstop=4 hardtabs=4 shiftwidth=4:
++---------------------------------------------------
+
 ~~ vi:set tabstop=4 hardtabs=4 shiftwidth=4:
