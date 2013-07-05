@@ -159,12 +159,12 @@ public class JavaCodeScriptEngineFactory
 		buf.append(getClassName());
 		buf.append("\n{\n");
 		buf.append("\tpublic static void main(String[] args)\n");
-		buf.append("{\n");
+		buf.append("\t{\n");
 		if (statements.length != 0)
 		{
 			for (int i = 0; i < statements.length; i++)
 			{
-				buf.append("\t");
+				buf.append("\t\t");
 				buf.append(statements[i]);
 				buf.append(";\n");
 			}

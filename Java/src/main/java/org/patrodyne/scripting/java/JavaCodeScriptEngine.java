@@ -113,7 +113,7 @@ public class JavaCodeScriptEngine
 	public CompiledScript compile(Reader reader)
 		throws ScriptException
 	{
-		return compile(readFully(reader));
+		return compile(readScript(reader));
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class JavaCodeScriptEngine
 	public Object eval(Reader reader, ScriptContext ctx)
 		throws ScriptException
 	{
-		return eval(readFully(reader), ctx);
+		return eval(readScript(reader), ctx);
 	}
 
 	/**
@@ -160,6 +160,20 @@ public class JavaCodeScriptEngine
 		
 		Map<String, byte[]> memoryMap = 
 			getCompiler().compile(sourceName, source, ctx.getErrorWriter(), sourcePath, classPath);
+		
+		if (memoryMap == null )
+		{
+			try
+			{
+				ctx.getErrorWriter().write("RECOVERY> Auto wrapping source in a 'main' method.\n");
+			}
+			catch (IOException e)
+			{
+				// Oh, well.
+			}
+			source = getFactory().getProgram(source.split("[\\r\\n]+"));
+			memoryMap= getCompiler().compile(sourceName, source, ctx.getErrorWriter(), sourcePath, classPath);
+		}
 		
 		if (memoryMap == null)
 			throw new ScriptException("compilation failed");
@@ -189,12 +203,11 @@ public class JavaCodeScriptEngine
 					return c;
 				else
 				{
-					// if class with "main" method, then
-					// return first class
-					Iterator<Class<?>> itr = classes.iterator();
-					if (itr.hasNext())
+					// if no class with "main" method, then return first class
+					 Iterator<Class<?>> itr = classes.iterator();
+					 if (itr.hasNext())
 						return itr.next();
-					else
+					 else
 						return null;
 				}
 			}
@@ -342,7 +355,7 @@ public class JavaCodeScriptEngine
 			return ctx.getAttribute(MAINCLASS).toString();
 		else
 		{
-			// look for "com.sun.script.java.mainClass"
+			// look for "org.patrodyne.scripting.java.mainClass"
 			return System.getProperty(SYSPROP_PREFIX + MAINCLASS);
 		}
 	}
@@ -414,8 +427,16 @@ public class JavaCodeScriptEngine
 		}
 	}
 
-	// read a Reader fully and return the content as string
-	private String readFully(Reader reader)
+	// As the leading characters in a script, indicates when
+	// the first line is consumed by a Linux shell interpreter
+	// and is to be ignored by the ScriptEngine.
+	private static final String SHEBANG = "#!";
+	// End of Line character.
+	private static final String EOL = "\n";
+	
+	// read a Script fully and return the content as string
+	// skip shebang, if found. 
+	private String readScript(Reader reader)
 		throws ScriptException
 	{
 		char[] arr = new char[8 * 1024]; // 8K at a time
@@ -430,8 +451,11 @@ public class JavaCodeScriptEngine
 		{
 			throw new ScriptException(exp);
 		}
-		
-		return buf.toString();
+		String script = buf.toString();
+		// Skip SHEBANG line when present.
+		if (script.startsWith(SHEBANG))
+			script = script.substring(script.indexOf(EOL));
+		return script;
 	}
 }
 // vi:set tabstop=4 hardtabs=4 shiftwidth=4:
