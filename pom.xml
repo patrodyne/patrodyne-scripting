@@ -19,11 +19,15 @@
 
 	<modules>
 		<module>Java</module>
+		<module>JavaBang</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<color.scheme>ColorScheme-F6D09C.properties</color.scheme>
+		<source>${basedir}/src</source>
+		<target>${project.build.directory}</target>
+		<libdir>lib</libdir>
 	</properties>
 
 	<organization>
@@ -145,6 +149,38 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
+								<!-- antrun -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-antrun-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+                  							<runOnIncremental>false</runOnIncremental>
+                						</execute>
+									</action>
+								</pluginExecution>
+								<!-- dependency -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+                  							<runOnIncremental>false</runOnIncremental>
+                						</execute>
+									</action>
+								</pluginExecution>
 								<!-- enforcer -->
 								<pluginExecution>
 									<pluginExecutionFilter>
@@ -288,6 +324,7 @@
 										<filtersfile file="src/site/properties/css/${color.scheme}" />
 									</filterset>
 								</copy>
+								<!--
 								<copy file="src/site/templates/css/apidocs.css" toFile="${site.home}/apidocs/stylesheet.css" overwrite="true">
 									<filterset>
 										<filtersfile file="src/site/properties/css/${color.scheme}" />
@@ -298,6 +335,7 @@
 										<filtersfile file="src/site/properties/css/${color.scheme}" />
 									</filterset>
 								</copy>
+								-->
 							</target>
 						</configuration>
 					</execution>

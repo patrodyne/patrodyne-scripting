@@ -50,7 +50,7 @@ public class JavaCodeScriptEngineFactory
 		mimeTypes.add("application/java");
 		mimeTypes = Collections.unmodifiableList(mimeTypes);
 	}
-	
+
 	/** Represents the engine name for metadata discovery. */
 	public String getEngineName() {	return "JavaCode"; }
 
@@ -181,6 +181,7 @@ public class JavaCodeScriptEngineFactory
 	{
 		JavaCodeScriptEngine engine = new JavaCodeScriptEngine();
 		engine.setFactory(this);
+		engine.setScriptReader(getScriptReader());
 		return engine;
 	}
 
@@ -194,6 +195,41 @@ public class JavaCodeScriptEngineFactory
 	private static synchronized long getNextClassNumber()
 	{
 		return nextClassNum++;
+	}
+	
+	// Represents the script reader.
+	private ScriptReader scriptReader;
+	/**
+	 * Get the object used to load a Java source script.
+	 * @return the scriptReader
+	 */
+	public ScriptReader getScriptReader()
+	{
+		return scriptReader;
+	}
+	/**
+	 * Set the object used to load a Java source script.
+	 * @param scriptReader the scriptReader to set
+	 */
+	public void setScriptReader(ScriptReader scriptReader)
+	{
+		this.scriptReader = scriptReader;
+	}
+
+	/**
+	 * Construct factory with a script reader object.
+	 * @param scriptReader The object used to read the Java source script.
+	 */
+	public JavaCodeScriptEngineFactory(ScriptReader scriptReader)
+	{
+		super();
+		setScriptReader(scriptReader);
+	}
+
+	/** Construct factory without an external script reader. */
+	public JavaCodeScriptEngineFactory()
+	{
+		this(null);
 	}
 }
 // vi:set tabstop=4 hardtabs=4 shiftwidth=4:

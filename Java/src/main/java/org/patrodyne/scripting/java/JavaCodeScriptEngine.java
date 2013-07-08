@@ -37,7 +37,7 @@ import javax.script.SimpleBindings;
  */
 public class JavaCodeScriptEngine
 	extends AbstractScriptEngine
-	implements Compilable
+	implements Compilable, ScriptReader
 {
 	private JavaCompiler compiler;
 	/**
@@ -72,6 +72,27 @@ public class JavaCodeScriptEngine
 	protected void setFactory(ScriptEngineFactory factory)
 	{
 		this.factory = factory;
+	}
+
+	private ScriptReader scriptReader;
+	/**
+	 * Get the object used to load a Java source script.
+	 * Default is this JavaCodeScriptEngine instance.
+	 * @return the scriptReader
+	 */
+	public ScriptReader getScriptReader()
+	{
+		if ( scriptReader == null )
+			scriptReader = this;
+		return scriptReader;
+	}
+	/**
+	 * Set the object used to load a Java source script.
+	 * @param scriptReader the scriptReader to set
+	 */
+	public void setScriptReader(ScriptReader scriptReader)
+	{
+		this.scriptReader = scriptReader;
 	}
 
 	// Java implementation for CompiledScript
@@ -113,7 +134,7 @@ public class JavaCodeScriptEngine
 	public CompiledScript compile(Reader reader)
 		throws ScriptException
 	{
-		return compile(readScript(reader));
+		return compile(getScriptReader().loadScript(reader));
 	}
 
 	/**
@@ -134,7 +155,7 @@ public class JavaCodeScriptEngine
 	public Object eval(Reader reader, ScriptContext ctx)
 		throws ScriptException
 	{
-		return eval(readScript(reader), ctx);
+		return eval(getScriptReader().loadScript(reader), ctx);
 	}
 
 	/**
@@ -427,19 +448,21 @@ public class JavaCodeScriptEngine
 		}
 	}
 
-	// As the leading characters in a script, indicates when
-	// the first line is consumed by a Linux shell interpreter
-	// and is to be ignored by the ScriptEngine.
-	private static final String SHEBANG = "#!";
-	// End of Line character.
-	private static final String EOL = "\n";
-	
-	// read a Script fully and return the content as string
-	// skip shebang, if found. 
-	private String readScript(Reader reader)
+	/** 
+	 * Load a Java source script into a string.
+	 * 
+	 * @param reader An I/O Reader bound to a Java source script.
+	 * 
+	 * @return A string containing the source script.
+	 * @throws ScriptException When the source cannot be loaded.
+	 * 
+	 * @see org.patrodyne.scripting.java.ScriptReader#readScript(java.io.Reader)
+	 */
+	@Override
+	public String loadScript(Reader reader)
 		throws ScriptException
 	{
-		char[] arr = new char[8 * 1024]; // 8K at a time
+		char[] arr = new char[BLOCK_SIZE];
 		StringBuilder buf = new StringBuilder();
 		int numChars;
 		try
@@ -451,11 +474,7 @@ public class JavaCodeScriptEngine
 		{
 			throw new ScriptException(exp);
 		}
-		String script = buf.toString();
-		// Skip SHEBANG line when present.
-		if (script.startsWith(SHEBANG))
-			script = script.substring(script.indexOf(EOL));
-		return script;
+		return buf.toString();
 	}
 }
 // vi:set tabstop=4 hardtabs=4 shiftwidth=4:
