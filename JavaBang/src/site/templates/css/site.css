@@ -1,0 +1,226 @@
+/* site theme */
+
+body, td, select, input, li {
+	font-size: 1.0em;
+}
+
+table {
+	font-size: 0.8em;
+}
+
+#leftColumn {
+	font-size: 0.8em;
+	width: 17.0em;
+}
+
+.primary-1 { background-color: @clr.primary-1@ }
+.primary-2 { background-color: @clr.primary-2@ }
+.primary-3 { background-color: @clr.primary-3@ }
+.primary-4 { background-color: @clr.primary-4@ }
+.primary-5 { background-color: @clr.primary-5@ }
+
+.secondary-a-1 { background-color: @clr.secondary-a-1@ }
+.secondary-a-2 { background-color: @clr.secondary-a-2@ }
+.secondary-a-3 { background-color: @clr.secondary-a-3@ }
+.secondary-a-4 { background-color: @clr.secondary-a-4@ }
+.secondary-a-5 { background-color: @clr.secondary-a-5@ }
+
+.secondary-b-1 { background-color: @clr.secondary-b-1@ }
+.secondary-b-2 { background-color: @clr.secondary-b-2@ }
+.secondary-b-3 { background-color: @clr.secondary-b-3@ }
+.secondary-b-4 { background-color: @clr.secondary-b-4@ }
+.secondary-b-5 { background-color: @clr.secondary-b-5@ }
+
+.complement-1 { background-color: @clr.complement-1@ }
+.complement-2 { background-color: @clr.complement-2@ }
+.complement-3 { background-color: @clr.complement-3@ }
+.complement-4 { background-color: @clr.complement-4@ }
+.complement-5 { background-color: @clr.complement-5@ }
+
+#bodyColumn a:link, a.externalLink:link {
+	color: @clr.complement-3@;
+}
+#bodyColumn a:visited, a.externalLink:visited {
+	color: @clr.complement-2@;
+	font-style: italic;
+}
+a:active, a:hover, a.externalLink:active, a.externalLink:hover {
+	text-decoration:underline;
+}
+a[name] {
+	text-decoration:none;
+}
+
+acronym {
+	border-bottom: thin dotted @clr.complement-3@;
+}
+body {
+	background-color: @clr.complement-5@;
+}
+dl {
+	background-color: @clr.complement-4@;
+	border: thin solid @clr.complement-3@;
+}
+dt {
+	color: @clr.complement-3@;
+}
+hr {
+	border: thin solid @clr.complement-3@;
+}
+
+#banner {
+	background-color: @clr.primary-4@;
+	border-bottom: thin solid @clr.primary-4@;
+}
+#banner a:link, a.externalLink:link {
+	color: @clr.primary-3@;
+}
+#banner a:visited, a.externalLink:visited {
+	color: @clr.primary-2@;
+	font-style: italic;
+}
+#bodyColumn h1 {
+	color: @clr.primary-2@;
+	background-color: @clr.primary-4@;
+	border: thin solid @clr.complement-3@;
+}
+#bodyColumn h1 a:link, a.externalLink:link {
+	color: @clr.primary-3@;
+}
+#bodyColumn h1 a:visited, a.externalLink:visited {
+	color: @clr.primary-2@;
+	font-style: italic;
+}
+#bodyColumn h2 {
+	color: @clr.primary-2@;
+	background-color: @clr.primary-4@;
+	border: thin solid @clr.complement-3@;
+}
+#bodyColumn h2 a:link, a.externalLink:link {
+	color: @clr.primary-3@;
+}
+#bodyColumn h2 a:visited, a.externalLink:visited {
+	color: @clr.primary-2@;
+	font-style: italic;
+}
+#bodyColumn h3 {
+	color: @clr.primary-2@;
+	background-color: @clr.primary-5@;
+	border: thin solid @clr.complement-3@;
+}
+#bodyColumn h3 a:link, a.externalLink:link {
+	color: @clr.primary-3@;
+}
+#bodyColumn h3 a:visited, a.externalLink:visited {
+	color: @clr.primary-2@;
+	font-style: italic;
+}
+#bodyColumn h4 {
+	color: @clr.secondary-a-2@;
+	background-color: @clr.secondary-a-4@;
+	border: thin solid @clr.complement-3@;
+}
+#bodyColumn h4 a:link, a.externalLink:link {
+	color: @clr.secondary-a-3@;
+}
+#bodyColumn h4 a:visited, a.externalLink:visited {
+	color: @clr.secondary-a-2@;
+	font-style: italic;
+}
+#bodyColumn h5 {
+	color: @clr.secondary-a-2@;
+	background-color: @clr.secondary-a-5@;
+	border: thin solid @clr.complement-3@;
+}
+#bodyColumn h5 a:link, a.externalLink:link {
+	color: @clr.secondary-a-3@;
+}
+#bodyColumn h5 a:visited, a.externalLink:visited {
+	color: @clr.secondary-a-2@;
+	font-style: italic;
+}
+#bodyColumn h6 {
+	color: @clr.secondary-a-2@;
+	background-color: @clr.secondary-a-5@;
+	border: thin solid @clr.complement-3@;
+}
+#bodyColumn h6 a:link, a.externalLink:link {
+	color: @clr.secondary-a-3@;
+}
+#bodyColumn h6 a:visited, a.externalLink:visited {
+	color: @clr.secondary-a-2@;
+	font-style: italic;
+}
+#bodyColumn table.bodyTable {
+	border-collapse: collapse;
+	border: thin solid @clr.complement-3@;
+}
+#bodyColumn table.bodyTable td {
+	border: thin solid @clr.secondary-b-3@;
+}
+#bodyColumn table.bodyTable th {
+	color: @clr.secondary-b-5@;
+	background-color: @clr.secondary-b-3@;
+	border: thin solid @clr.secondary-b-3@;
+}
+#bodyColumn table.bodyTable tr.a {
+	background-color: @clr.secondary-b-4@;
+}
+#bodyColumn table.bodyTable tr.b {
+	background-color: @clr.secondary-b-5@;
+}
+#bodyColumn table.bodyTable tr a:link, a.externalLink:link {
+	color: @clr.secondary-b-3@;
+}
+#bodyColumn table.bodyTable tr a:visited, a.externalLink:visited {
+	color: @clr.secondary-b-2@;
+	font-style: italic;
+}
+#breadcrumbs, #footer {
+	background-color: @clr.secondary-b-4@;
+	border-top: thin solid @clr.complement-3@;
+	border-bottom: thin solid @clr.complement-3@;
+}
+#breadcrumbs a:link, a.externalLink:link {
+	color: @clr.secondary-b-3@;
+}
+#breadcrumbs a:visited, a.externalLink:visited {
+	color: @clr.secondary-b-2@;
+	font-style: italic;
+}
+#footer a:link, a.externalLink:link {
+	color: @clr.secondary-b-3@;
+}
+#footer a:visited, a.externalLink:visited {
+	color: @clr.secondary-b-2@;
+	font-style: italic;
+}
+#leftColumn {
+	background-color: @clr.primary-5@;
+	border: thin solid @clr.complement-3@;
+}
+#leftColumn a:link, a.externalLink:link {
+	color: @clr.primary-3@;
+}
+#leftColumn a:visited, a.externalLink:visited {
+	color: @clr.primary-2@;
+	font-style: italic;
+}
+#navcolumn h5 {
+	color: @clr.primary-3@;
+	border-bottom: thin solid @clr.primary-3@;
+}
+#navcolumn strong {
+	color: @clr.primary-1@;
+	text-decoration:underline;
+}
+#search #q, #search #btnG {
+	border: thin solid @clr.complement-3@;
+}
+
+.source {
+	background-color: @clr.complement-4@;
+	border: thin solid @clr.complement-3@;
+}
+
+/* vi:set tabstop=4 hardtabs=4 shiftwidth=4: */

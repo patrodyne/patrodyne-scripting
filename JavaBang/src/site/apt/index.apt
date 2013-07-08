@@ -1,0 +1,147 @@
+A Shebang for Java
+
+	In Linux and Unix, a shebang is the character sequence consisting of
+	the characters "number sign" and "exclamation mark" (that is, "#!").
+
+	When it occurs as the initial two characters on the first line of a shell
+	script, the rest of the script is executed by the interpreter specified on
+	that line. For example, if the first line of a script begins with
+	"#!/bin/bash" then the script is executed by "bash".
+
+	Because the command interpreter is known as a "shell" and because
+	the "exclamation mark" suggests excitement (as in "bang"), the two
+	characters and the rest of the first line is called the "shebang".
+
+* {Usage}
+
+	There are two ways to use <<<patrodyne-scripting-java-X.X.X.jar>>>:
+	
+	[[1]] {{Direct}} - Execute the jar from the command line to run a Java class.
+	
+	[[2]] {{Shebang}} - Execute a shell script using #!/usr/bin/javabang
+
+	[]
+
+** {Direct}
+
+	The JAR for this project can be executed directly:
+	
++--------------------------------------------------------------------
+Linux:
+
+    java -jar patrodyne-scripting-javabang-X.X.X.jar $*
+
+Windows:
+
+    java -jar patrodyne-scripting-javabang-X.X.X.jar %*
+
+Example:
+
+    java -jar patrodyne-scripting-javabang-X.X.X.jar HelloWorld.java arg0 arg1 arg2
++--------------------------------------------------------------------
+
+	In the above examples, the JAR and the Java sources must be in the same
+	directory. You can apply your programming skills to increase flexibility, just
+	add a fully qualify the location to the JAR.
+	
+	Note: The <<<java>>> command must be on your path!
+
++--------------------------------------------------------------------
+Linux:
+
+    java -jar ${HOME}/lib/patrodyne-scripting-javabang-X.X.X.jar $*
+
+Windows:
+
+    java -jar %HOME%\lib\patrodyne-scripting-javabang-X.X.X.jar %*
++--------------------------------------------------------------------
+
+	By specifying the JAR with a fully qualified path, you can run a Java source
+	file from the current working directory. A source file, say
+	<<<HelloWorld.java>>> must contain the usual <<<'public static void
+	main(String[] args)'>>> method before for your program will do anything
+	useful. When a <<<main>>> method is found, the arguments after the file name
+	are passed into your program, as you would expect.
+	
+	Here is an example of <<<HelloWorld.java>>>:
+
++--------------------------------------------------------------------
+import javax.script.*;
+
+class HelloWorld
+{  
+    private static ScriptContext ctx;
+    public static void setScriptContext(ScriptContext ctx)
+    {
+        this.ctx = ctx;
+    }
+
+    public static void main(String[] args)
+    {
+        System.out.println("Hello World!");
+        for (int argno=0;  argno < args.length; ++argno)
+            System.out.println("\t"+argno+": "+args[argno]);
+    }
+}
++--------------------------------------------------------------------
+
+	When this example is evaluated as a JSR-223 <script> by our JAR, the
+	<<<ScriptContext>>> is set prior to execution of the main method. The script
+	context can contain runtime objects as provided by the script engine. In fact,
+	in direct mode, the context will always contain:
+	
+	* an object named <<<javax.script.filename>>> to provide the source file name.
+	
+	* an object named <<<arguments>>> to represent the command line options as an array of strings,
+	in the usual way.
+	
+	[] 
+
+	System properties can be used to change the default location to search for
+	additional source files, classes and jars:
+	
+	* <<<-Dorg.patrodyne.scripting.java.sourcepath>>> - colon separated list of paths.
+	
+	* <<<-Dorg.patrodyne.scripting.java.classpath>>> - colon separated list of paths, jars, etc.
+
+	[]
+
+** {Embedded}
+
+	The second way to use our <Script Engine for Java> is to include it in the class path of
+	a JSR-223 enabled application. An excellent example of such an application is Patrodyne's
+	{{{http://patrodyne.org/sites/etl-TransformIO/index.html}TransformIO}}.
+	
+	Metadata:
+	
+	* Engine Name: <<<JavaCode>>>
+	
+	* Short Names: <<<JavaCode, Java>>>
+	
+	* MIME Type: <<<application/java>>>
+	
+	* Extensions: <<<java>>>
+	
+	[]
+
+** {Utility}
+
+	To run Java programs from the command line, 
+	
+	[[1]] put patrodyne-scripting-javabang-X.X.X.jar into your ~/lib path,
+	
+	[[2]] add this script to your ~/bin path, 
+	
+	[[3]] name it psj.
+
+	[]
+
++---------------------------------------------------
+#!/bin/sh
+# Patrodyne's Scripting Engine for Java
+java -Dorg.patrodyne.scripting.java.classpath="." \
+  -jar ~/lib/patrodyne-scripting-javabang-X.X.X.jar $*
+# vi:set tabstop=4 hardtabs=4 shiftwidth=4:
++---------------------------------------------------
+
+~~ vi:set tabstop=4 hardtabs=4 shiftwidth=4:
