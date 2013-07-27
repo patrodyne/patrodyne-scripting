@@ -6,27 +6,27 @@ import javax.swing.SwingUtilities;
 @SuppressWarnings("serial")
 public class SwingFrame extends JFrame
 {
-    public SwingFrame()
+	public SwingFrame()
 	{
-       setTitle("Simple Swing Frame");
-       setSize(300, 200);
-       setLocationRelativeTo(null);
-       setDefaultCloseOperation(EXIT_ON_CLOSE);        
-    }
+	   setTitle("Simple Swing Frame");
+	   setSize(300, 200);
+	   setLocationRelativeTo(null);
+	   setDefaultCloseOperation(EXIT_ON_CLOSE);		   
+	}
 
-    public static void main(String[] args)
+	public static void main(String[] args)
 	{
-        SwingUtilities.invokeLater
+		SwingUtilities.invokeLater
 		(
 			new Runnable()
 			{
-            	@Override
-            	public void run()
+				@Override
+				public void run()
 				{
-            		SwingFrame ex = new SwingFrame();
-                	ex.setVisible(true);
-            	}
-        	}
+					SwingFrame ex = new SwingFrame();
+					ex.setVisible(true);
+				}
+			}
 		);
-    }
+	}
 }
