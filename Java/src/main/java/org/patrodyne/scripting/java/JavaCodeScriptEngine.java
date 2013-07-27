@@ -39,6 +39,21 @@ public class JavaCodeScriptEngine
 	extends AbstractScriptEngine
 	implements Compilable, ScriptReader
 {
+	/** Represents the prefix used for certain variables where we look for System properties. */
+	public static final String SYSPROP_PREFIX = "org.patrodyne.scripting.java.";
+	/** Represents the name of the context property for the source path. */
+	public static final String SOURCEPATH = "sourcepath";
+	/** Represents the name of the context property for the class path. */
+	public static final String CLASSPATH = "classpath";
+	/** Represents the name of the context property for the main class name. */
+	public static final String MAINCLASS = "mainClass";
+	/** Represents the name of the context property for add class directive. */
+	public static final String ADDMAIN = "addmain";
+	/** Represents the name of the context property for parent loader. */
+	public static final String PARENTLOADER = "parentLoader";
+	// Represents an empty string array.
+	private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
 	private JavaCompiler compiler;
 	/**
 	 * Get or create the compiler.
@@ -179,22 +194,12 @@ public class JavaCodeScriptEngine
 		String sourcePath = getSourcePath(ctx);
 		String classPath = getClassPath(ctx);
 		
-		Map<String, byte[]> memoryMap = 
-			getCompiler().compile(sourceName, source, ctx.getErrorWriter(), sourcePath, classPath);
-		
-		if (memoryMap == null )
-		{
-			try
-			{
-				ctx.getErrorWriter().write("RECOVERY> Auto wrapping source in a 'main' method.\n");
-			}
-			catch (IOException e)
-			{
-				// Oh, well.
-			}
+		// When directed, wrap the the source in a program 
+		// by adding a main method and class.
+		if ( getAddMain(ctx) )
 			source = getFactory().getProgram(source.split("[\\r\\n]+"));
-			memoryMap= getCompiler().compile(sourceName, source, ctx.getErrorWriter(), sourcePath, classPath);
-		}
+		
+		Map<String, byte[]> memoryMap = getCompiler().compile(sourceName, source, ctx.getErrorWriter(), sourcePath, classPath);
 		
 		if (memoryMap == null)
 			throw new ScriptException("compilation failed");
@@ -315,20 +320,14 @@ public class JavaCodeScriptEngine
 			return "$unnamed.java";
 	}
 
-	// for certain variables, we look for System properties. This is
-	// the prefix used for such System properties
-	private static final String SYSPROP_PREFIX = "org.patrodyne.scripting.java.";
-	private static final String[] EMPTY_STRING_ARRAY = new String[0];
-	private static final String ARGUMENTS = "arguments";
-
 	// Get source path from the first of:
 	// 1) ScriptContext: arguments
 	private static String[] getArguments(ScriptContext ctx)
 	{
-		int scope = ctx.getAttributesScope(ARGUMENTS);
+		int scope = ctx.getAttributesScope(ScriptEngine.ARGV);
 		if (scope != -1)
 		{
-			Object obj = ctx.getAttribute(ARGUMENTS, scope);
+			Object obj = ctx.getAttribute(ScriptEngine.ARGV, scope);
 			if (obj instanceof String[])
 				return (String[]) obj;
 		}
@@ -339,7 +338,6 @@ public class JavaCodeScriptEngine
 	// Get source path from the first of:
 	// 1) ScriptContext: sourcepath
 	// 2) -Dorg.patrodyne.scripting.java.sourcepath
-	private static final String SOURCEPATH = "sourcepath";
 	private static String getSourcePath(ScriptContext ctx)
 	{
 		int scope = ctx.getAttributesScope(SOURCEPATH);
@@ -353,7 +351,6 @@ public class JavaCodeScriptEngine
 	// 1) ScriptContext: classpath
 	// 2) -Dorg.patrodyne.scripting.java.classpath
 	// 3) -Djava.class.path
-	private static final String CLASSPATH = "classpath";
 	private static String getClassPath(ScriptContext ctx)
 	{
 		int scope = ctx.getAttributesScope(CLASSPATH);
@@ -368,7 +365,6 @@ public class JavaCodeScriptEngine
 		}
 	}
 
-	private static final String MAINCLASS = "mainClass";
 	private static String getMainClassName(ScriptContext ctx)
 	{
 		int scope = ctx.getAttributesScope(MAINCLASS);
@@ -381,7 +377,18 @@ public class JavaCodeScriptEngine
 		}
 	}
 
-	private static final String PARENTLOADER = "parentLoader";
+	private static boolean getAddMain(ScriptContext ctx)
+	{
+		int scope = ctx.getAttributesScope(ADDMAIN);
+		if (scope != -1)
+			return new Boolean(ctx.getAttribute(ADDMAIN).toString());
+		else
+		{
+			// look for "org.patrodyne.scripting.java.addclass"
+			return new Boolean(System.getProperty(SYSPROP_PREFIX + ADDMAIN));
+		}
+	}
+
 	private static ClassLoader getParentLoader(ScriptContext ctx)
 	{
 		int scope = ctx.getAttributesScope(PARENTLOADER);

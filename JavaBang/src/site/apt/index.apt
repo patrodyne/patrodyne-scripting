@@ -14,7 +14,7 @@ A Shebang for Java
 
 * {Usage}
 
-	There are two ways to use <<<patrodyne-scripting-java-X.X.X.jar>>>:
+	There are two ways to use <<<patrodyne-scripting-javabang-X.X.X.jar>>>:
 	
 	[[1]] {{Direct}} - Execute the jar from the command line to run a Java class.
 	

@@ -80,7 +80,7 @@ public class JavaCompiler
 	 */
 	public Map<String, byte[]> compile(String fileName, String source) throws ScriptException
 	{
-		PrintWriter err = new PrintWriter(System.err);
+		PrintWriter err = new PrintWriter(Console.getStandard().getOutput());
 		return compile(source, fileName, err, null, null);
 	}
 
@@ -154,11 +154,10 @@ public class JavaCompiler
 		else if ( err != null)
 			perr = new PrintWriter(err);
 		else 
-			perr = new PrintWriter(System.err);
+			perr = new PrintWriter(Console.getStandard().getOutput());
 		
 		// Create a compilation task.
-		CompilationTask compilationTask = 
-			getSystemJavaCompiler().getTask(perr, javaFileManager, diagnostics, options, null, javaFileObjects);
+		CompilationTask compilationTask = getSystemJavaCompiler().getTask(perr, javaFileManager, diagnostics, options, null, javaFileObjects);
 		
         // Performs this compilation task. 
 		// True, if and only if, all the files compiled without errors.
@@ -225,6 +224,8 @@ public class JavaCompiler
 		// enable all recommended warnings.
 		options.add("-Xlint:all");
 		
+		// TODO: options.add("-verbose");
+		
 		// enable debugging for line numbers and local variables.
 		options.add("-g:lines,vars");
 		
@@ -246,6 +247,7 @@ public class JavaCompiler
 			options.add("-classpath");
 			options.add(classPath);
 		}
+
 		return options;
 	}
 }

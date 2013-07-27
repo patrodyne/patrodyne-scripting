@@ -3,7 +3,6 @@
 package org.patrodyne.scripting.java;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -27,11 +26,8 @@ public class Execute implements ScriptReader
 	 * Script Engine.
 	 * 
 	 * @param args - command line options.
-	 * 
-	 * @throws IOException When the source file cannot be read or closed.
-	 * @throws ScriptException When the script contains errors.
 	 */
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
     {
     	if ( args.length > 0 )
     	{
@@ -39,7 +35,7 @@ public class Execute implements ScriptReader
     		executor.run(args);
     	}
     	else
-    		println("Usage: java -jar patrodyne-scripting-java-X.X.X.jar <filename> [args]");
+    		errorln("Usage: java -jar patrodyne-scripting-java-X.X.X.jar <filename> [args]");
     }
 
     
@@ -79,7 +75,6 @@ public class Execute implements ScriptReader
 	
 	// Run a program using the JavaCode script engine.
 	private void run(String[] args)
-		throws FileNotFoundException, IOException
 	{
 		// Create script file.
 		File script = new File(args[0]);
@@ -103,35 +98,39 @@ public class Execute implements ScriptReader
 			if ( args.length > 1 )
 			{
 				String[] arguments = Arrays.copyOfRange(args, 1, args.length);
-				ctx.setAttribute("arguments", arguments, ScriptContext.ENGINE_SCOPE);
+				ctx.setAttribute(ScriptEngine.ARGV, arguments, ScriptContext.ENGINE_SCOPE);
 			}
 			
-			// Execute script code using a file reader.
-			Reader reader = null;
-			try
+			//////////////////////////////////
+			// Read, load and evaluate script.
+			//////////////////////////////////
+			try (Reader reader = new FileReader(script))
 			{
-				reader = new FileReader(script);
 				engine.eval(reader, ctx);
+			}
+			catch (IOException ioe)
+			{
+				errorln("cannot read script", ioe);
 			}
 			catch (ScriptException sex)
 			{
-				println("\n"+sex.getClass().getSimpleName()+": "+sex.getMessage()+"\n");
-			}
-			finally
-			{
-				if ( reader != null )
-					reader.close();
+				errorln("cannot evaluate script", sex);
 			}
 		}
 		else
-			println("script does not exist: "+script);
+			errorln("script does not exist: "+script);
 	}
     
-    // Print an object to the standard error stream.
-    private static void println(Object obj)
+    // Output an object to the standard error console.
+    protected static void errorln(Object obj)
     {
-    	if ( obj != null)
-    		System.err.println(obj.toString());
+    	Console.getStandard().errorln(obj);
+    }
+    
+    // Output an object and throwable to the standard error console.
+    protected static void errorln(Object obj, Throwable err)
+    {
+    	Console.getStandard().errorln(obj, err);
     }
 }
 // vi:set tabstop=4 hardtabs=4 shiftwidth=4:
