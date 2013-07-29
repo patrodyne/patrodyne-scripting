@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -216,7 +215,7 @@ public class Execute implements ScriptReader
 	private Boolean offline;
 	/**
 	 * Is the resolution mode offline?
-	 * @return True when remote repos are to be scanned; otherwise, false.
+	 * @return True when remote repos are not scanned; otherwise, false.
 	 */
 	public boolean isOffline()
 	{
@@ -236,7 +235,19 @@ public class Execute implements ScriptReader
 			verbose = new Boolean(getProperties().getProperty("verbose", "false"));
 		return verbose;
 	}
-	
+
+	private Boolean debug;
+	/**
+	 * Is the debug mode on?
+	 * @return True when output is extra detailed; otherwise, false.
+	 */
+	public boolean isDebug()
+	{
+		if ( debug == null )
+			debug = new Boolean(getProperties().getProperty("debug", "false"));
+		return debug;
+	}
+
 	/**
 	 * Entry point for command line invocation of the JavaCode
 	 * Script Engine.
@@ -421,11 +432,11 @@ public class Execute implements ScriptReader
 	{
 		getConsole().errorln(obj);
 	}
-    
-    // Output an object and throwable to the standard error console.
-    protected static void errorln(Object obj, Throwable err)
-    {
-    	Console.getStandard().errorln(obj, err);
-    }
+	
+	// Output an object and throwable to the standard error console.
+	protected static void errorln(Object obj, Throwable err)
+	{
+		Console.getStandard().errorln(obj, err);
+	}
 }
 // vi:set tabstop=4 hardtabs=4 shiftwidth=4:

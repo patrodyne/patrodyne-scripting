@@ -1,5 +1,6 @@
 // PatroDyne: Patron Supported Dynamic Executables, http://patrodyne.org
 // Released under LGPL license. See terms at http://www.gnu.org.
+// Modified from Sonatype, Inc. examples.
 package org.patrodyne.scripting.javabang.aether.util;
 
 import java.util.ArrayList;
@@ -61,18 +62,55 @@ public class RepositorySystemFactory
 	{
 		this.remoteRepositories = remoteRepositories;
 	}
-	
+
+	private boolean offline;
+	/**
+	 * Is the resolution mode offline?
+	 * @return True when remote repos are not scanned; otherwise, false.
+	 */
+	public boolean isOffline()
+	{
+		return offline;
+	}
+	/**
+	 * Set the offline mode.
+	 * @param offline The offline mode.
+	 */
+	private void setOffline(boolean offline)
+	{
+		this.offline = offline;
+	}
+
+	private boolean debug;
+	/**
+	 * Is debug mode on.
+	 * @return the debug mode
+	 */
+	public boolean isDebug()
+	{
+		return debug;
+	}
+	/**
+	 * Set debug mode for extra output.
+	 * @param debug The debug mode to set
+	 */
+	public void setDebug(boolean debug)
+	{
+		this.debug = debug;
+	}
 	/**
 	 * Construct factory with repository configurations.
 	 * 
 	 * @param localRepository The local repository path.
 	 * @param remoteRepositories The remote repository locations.
 	 */
-	public RepositorySystemFactory(String localRepository, List<String> remoteRepositories)
+	public RepositorySystemFactory(String localRepository, List<String> remoteRepositories, boolean offline, boolean debug)
 	{
 		super();
 		setLocalRepository(localRepository);
 		setRemoteRepositories(remoteRepositories);
+		setOffline(offline);
+		setDebug(debug);
 	}
 	
 	/**
@@ -99,10 +137,12 @@ public class RepositorySystemFactory
 
 		LocalRepository localRepo = new LocalRepository( getLocalRepository() );
 		session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );
+		session.setOffline(isOffline());
 
 		// Add console listeners.
 		session.setTransferListener( new ConsoleTransferListener() );
-		session.setRepositoryListener( new ConsoleRepositoryListener() );
+		if (isDebug())
+			session.setRepositoryListener( new ConsoleRepositoryListener() );
 
 		// uncomment to generate dirty trees
 		// session.setDependencyGraphTransformer( null );

@@ -1,11 +1,8 @@
+// PatroDyne: Patron Supported Dynamic Executables, http://patrodyne.org
+// Released under LGPL license. See terms at http://www.gnu.org.
+// Modified from Sonatype, Inc. examples.
 package org.patrodyne.scripting.javabang.aether.manual;
-/*******************************************************************************
- * Copyright (c) 2010-2011 Sonatype, Inc.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- *	 http://www.eclipse.org/legal/epl-v10.html
- *******************************************************************************/
+
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.http.LightweightHttpWagon;
 import org.sonatype.aether.connector.wagon.WagonProvider;

@@ -1,5 +1,6 @@
 // PatroDyne: Patron Supported Dynamic Executables, http://patrodyne.org
 // Released under LGPL license. See terms at http://www.gnu.org.
+// Modified from Sonatype, Inc. examples.
 package org.patrodyne.scripting.javabang.aether.util;
 
 import java.io.PrintStream;

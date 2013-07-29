@@ -1,5 +1,6 @@
 // PatroDyne: Patron Supported Dynamic Executables, http://patrodyne.org
 // Released under LGPL license. See terms at http://www.gnu.org.
+// Modified from Sonatype, Inc. examples.
 package org.patrodyne.scripting.javabang.aether;
 
 import java.util.ArrayList;
@@ -65,18 +66,19 @@ public class ResolveTransitiveDependencies
 	public List<ArtifactResult> execute() throws RepositoryException
 	{
 		// A factory to boot the repository system and a repository system session.
-		RepositorySystemFactory factory = new RepositorySystemFactory(getContext().getLocalRepository(), 
-			getContext().getRemoteRepositories());
+		RepositorySystemFactory factory = new RepositorySystemFactory
+			(
+				getContext().getLocalRepository(), 
+				getContext().getRemoteRepositories(),
+				getContext().isOffline(),
+				getContext().isDebug()
+			);
 		
 		// The main entry point to the repository system.
 		RepositorySystem system = factory.newRepositorySystem();
 
 		// Defines settings and components that control the repository system.
 		RepositorySystemSession session = factory.newRepositorySystemSession( system );
-
-		// List of remote repositories for artifact resolution.
-		List<RemoteRepository> remoteRepositories = 
-			getContext().isOffline() ? null : factory.newRemoteRepositories();
 
 		// A list of dependencies to resolve.
 		List<Dependency> dependencies = new ArrayList<Dependency>();
@@ -91,6 +93,10 @@ public class ResolveTransitiveDependencies
 			dependencies.add(new Dependency( artifact, JavaScopes.COMPILE ));
 		}
 
+		// List of remote repositories for artifact resolution.
+		// In offline mode, this list is used to verify remote availability.
+		List<RemoteRepository> remoteRepositories = factory.newRemoteRepositories();
+
 		// Create a request to collect the transitive dependencies and to build a dependency graph. 
 		Dependency root = null;
 		CollectRequest collectRequest = new CollectRequest(root, dependencies, remoteRepositories);
@@ -104,6 +110,7 @@ public class ResolveTransitiveDependencies
 		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, classpathFlter);
 
 		// Resolve and collect the transitive dependencies of an artifact. 
+		// Dump Console Dependency Graph
 		DependencyResult dependencyResult = system.resolveDependencies(session, dependencyRequest);
 		List<ArtifactResult> artifactResults = dependencyResult.getArtifactResults();
 		dependencyResult.getRoot().accept(new ConsoleDependencyGraphDumper());

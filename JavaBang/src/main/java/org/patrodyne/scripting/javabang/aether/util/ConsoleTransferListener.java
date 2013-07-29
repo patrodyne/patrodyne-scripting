@@ -1,5 +1,6 @@
 // PatroDyne: Patron Supported Dynamic Executables, http://patrodyne.org
 // Released under LGPL license. See terms at http://www.gnu.org.
+// Modified from Sonatype, Inc. examples.
 package org.patrodyne.scripting.javabang.aether.util;
 
 import java.io.PrintStream;
@@ -37,6 +38,9 @@ public class ConsoleTransferListener
 	@Override
 	public void transferInitiated( TransferEvent event )
 	{
+		TransferResource resource = event.getResource();
+		String type = ( event.getRequestType() == TransferEvent.RequestType.PUT ? "Uploading" : "Downloading" );
+		println( type + ": " + resource.getRepositoryUrl() + resource.getResourceName() );
 		println("   10%  20   30   40   50   60   70   80   90  100");
 		println("----+----+----+----+----+----+----+----+----+----+");
 	}
