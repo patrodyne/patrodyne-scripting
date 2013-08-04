@@ -41,7 +41,7 @@ import org.sonatype.aether.resolution.ArtifactResult;
  * Declare the path to your local repository.
  * 
  * <pre>
- * //= /path/to/local/repository
+ * //: /path/to/local/repository
  * </pre>
  * 
  * Dependencies are declared in the script using 
@@ -65,13 +65,13 @@ import org.sonatype.aether.resolution.ArtifactResult;
 public class Execute implements ScriptReader
 {
 	// Directives
-	private static String DIRECTIVE_COMMENT = "//";
-	private static String DIRECTIVE_LOCAL_REPOSITORY = DIRECTIVE_COMMENT+"=";
-	private static String DIRECTIVE_REMOTE_REPOSITORY = DIRECTIVE_COMMENT+"@";
-	private static String DIRECTIVE_INCLUDE_DEPENDENCY = DIRECTIVE_COMMENT+"+";
-	private static String DIRECTIVE_EXCLUDE_DEPENDENCY = DIRECTIVE_COMMENT+"-";
-	private static String DIRECTIVE_INCLUDE_SOURCEPATH = DIRECTIVE_COMMENT+"&";
-	private static String DIRECTIVE_PROPERTY = DIRECTIVE_COMMENT+":";
+	public static String DIRECTIVE_COMMENT = org.patrodyne.scripting.java.Execute.DIRECTIVE_COMMENT;
+	public static String DIRECTIVE_PROPERTY = org.patrodyne.scripting.java.Execute.DIRECTIVE_PROPERTY;
+	public static String DIRECTIVE_LOCAL_REPOSITORY = DIRECTIVE_COMMENT+":";
+	public static String DIRECTIVE_REMOTE_REPOSITORY = DIRECTIVE_COMMENT+"@";
+	public static String DIRECTIVE_INCLUDE_DEPENDENCY = DIRECTIVE_COMMENT+"+";
+	public static String DIRECTIVE_EXCLUDE_DEPENDENCY = DIRECTIVE_COMMENT+"-";
+	public static String DIRECTIVE_INCLUDE_SOURCEPATH = DIRECTIVE_COMMENT+"&";
 	
 	// Directive Default Values
 	private static String DEFAULT_LOCAL_REPOSITORY = 
@@ -88,7 +88,7 @@ public class Execute implements ScriptReader
 	public String getLocalRepository()
 	{
 		if (localRepository == null)
-			localRepository = DEFAULT_LOCAL_REPOSITORY;
+			setLocalRepository(DEFAULT_LOCAL_REPOSITORY);
 		return localRepository;
 	}
 	/**
@@ -111,7 +111,7 @@ public class Execute implements ScriptReader
 	public List<String> getRemoteRepositories()
 	{
 		if ( remoteRepositories == null )
-			remoteRepositories = new ArrayList<String>();
+			setRemoteRepositories(new ArrayList<String>());
 		return remoteRepositories;
 	}
 	/**
@@ -134,7 +134,7 @@ public class Execute implements ScriptReader
 	public List<String> getIncludeDependencies()
 	{
 		if (includeDependencies == null)
-			includeDependencies = new ArrayList<String>();
+			setIncludeDependencies(new ArrayList<String>());
 		return includeDependencies;
 	}
 	/**
@@ -158,7 +158,7 @@ public class Execute implements ScriptReader
 	public List<String> getExcludeDependencies()
 	{
 		if (excludeDependencies == null)
-			excludeDependencies = new ArrayList<String>();
+			setExcludeDependencies(new ArrayList<String>());
 		return excludeDependencies;
 	}
 	/**
@@ -180,7 +180,7 @@ public class Execute implements ScriptReader
 	public List<String> getIncludeSourcePaths()
 	{
 		if ( includeSourcePaths == null )
-			includeSourcePaths = new ArrayList<String>();
+			setIncludeSourcePaths(new ArrayList<String>());
 		return includeSourcePaths;
 	}
 	/**
@@ -200,7 +200,7 @@ public class Execute implements ScriptReader
 	public Properties getProperties()
 	{
 		if ( properties == null )
-			properties = new Properties();
+			setProperties(new Properties());
 		return properties;
 	}
 	/**
@@ -248,6 +248,22 @@ public class Execute implements ScriptReader
 		return debug;
 	}
 
+	private String[] options;
+	/**
+	 * Get compiler options.
+	 * @return The options for compiling classes.
+	 */
+	public String[] getOptions()
+	{
+		if ( options == null )
+		{
+			String property = getProperties().getProperty("options", null);
+			options = ((property != null) && !property.isEmpty()) 
+					? property.split("\\s+") : JavaCodeScriptEngine.EMPTY_STRING_ARRAY;
+		}
+		return options;
+	}
+	
 	/**
 	 * Entry point for command line invocation of the JavaCode
 	 * Script Engine.
@@ -360,6 +376,7 @@ public class Execute implements ScriptReader
 				// Load script into a string and parse directives.
 				String script = loadScript(reader);
 				
+				// Set scripting context attribute to add a Main method.
 				ctx.setAttribute(JavaCodeScriptEngine.ADDMAIN, getAddMain(), ScriptContext.ENGINE_SCOPE);
 				
 				// Set console mode.
@@ -373,6 +390,8 @@ public class Execute implements ScriptReader
 				for ( ArtifactResult artifactResult : artifactResults )
 					ducl.addURL(artifactResult.getArtifact().getFile().toURI().toURL());
 				
+				// Add scripting context attributes.
+				ctx.setAttribute(JavaCodeScriptEngine.OPTIONS, getOptions(), ScriptContext.ENGINE_SCOPE);
 				ctx.setAttribute(JavaCodeScriptEngine.CLASSPATH, classpath(artifactResults), ScriptContext.ENGINE_SCOPE);
 				ctx.setAttribute(JavaCodeScriptEngine.PARENTLOADER, ducl, ScriptContext.ENGINE_SCOPE);
 				
@@ -436,7 +455,7 @@ public class Execute implements ScriptReader
 	// Output an object and throwable to the standard error console.
 	protected static void errorln(Object obj, Throwable err)
 	{
-		Console.getStandard().errorln(obj, err);
+		getConsole().errorln(obj, err);
 	}
 }
 // vi:set tabstop=4 hardtabs=4 shiftwidth=4:

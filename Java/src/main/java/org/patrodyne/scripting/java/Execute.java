@@ -5,8 +5,10 @@ package org.patrodyne.scripting.java;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.Properties;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -21,6 +23,64 @@ import javax.script.SimpleScriptContext;
  */
 public class Execute implements ScriptReader
 {
+	// Directives
+	public static String DIRECTIVE_COMMENT = "//";
+	public static String DIRECTIVE_PROPERTY = DIRECTIVE_COMMENT+"=";
+	
+	private Properties properties;
+	/**
+	 * Get properties for Maven/Aether configuration.
+	 * @return The properties for Maven/Aether configuration.
+	 */
+	public Properties getProperties()
+	{
+		if ( properties == null )
+			setProperties(new Properties());
+		return properties;
+	}
+	/**
+	 * Get properties for Maven/Aether configuration.
+	 * @param properties The configuration properties to set.
+	 */
+	public void setProperties(Properties properties)
+	{
+		this.properties = properties;
+	}
+	
+	// Get the 'addmain' directive as a boolean.
+	private boolean getAddMain()
+	{
+		return new Boolean(getProperties().getProperty(JavaCodeScriptEngine.ADDMAIN, "false"));
+	}
+	
+	private Boolean verbose;
+	/**
+	 * Is the resolution mode verbose?
+	 * @return True when output is detailed; otherwise, false.
+	 */
+	public boolean isVerbose()
+	{
+		if ( verbose == null )
+			verbose = new Boolean(getProperties().getProperty("verbose", "false"));
+		return verbose;
+	}
+	
+	private String[] options;
+	/**
+	 * Get compiler options.
+	 * @return The options for compiling classes.
+	 */
+	public String[] getOptions()
+	{
+		if ( options == null )
+		{
+			String property = getProperties().getProperty("options", null);
+			options = ((property != null) && !property.isEmpty()) 
+					? property.split("\\s+") : JavaCodeScriptEngine.EMPTY_STRING_ARRAY;
+		}
+		return options;
+	}
+	
 	/**
 	 * Entry point for command line invocation of the JavaCode
 	 * Script Engine.
@@ -38,9 +98,9 @@ public class Execute implements ScriptReader
     		errorln("Usage: java -jar patrodyne-scripting-java-X.X.X.jar <filename> [args]");
     }
 
-    
 	/** 
-	 * Load a Java source script into a string, skip shebang, when present.
+	 * Load a Java source script into a string, parse directives 
+	 * and skip shebang, when present.
 	 * 
 	 * @param reader An I/O Reader bound to a Java source script.
 	 * 
@@ -53,34 +113,46 @@ public class Execute implements ScriptReader
 	public String loadScript(Reader reader)
 		throws ScriptException
 	{
-		char[] arr = new char[BLOCK_SIZE];
-		StringBuilder buf = new StringBuilder();
-		int numChars;
-		try
+		StringBuilder script = new StringBuilder();
+		try (LineNumberReader lnr = new LineNumberReader(reader))
 		{
-			while ((numChars = reader.read(arr, 0, arr.length)) > 0)
-				buf.append(arr, 0, numChars);
+			String line;
+			while ( (line = lnr.readLine()) != null )
+			{
+				if (line.startsWith(SHEBANG))
+					line = DIRECTIVE_COMMENT + line;
+				else if (line.startsWith(DIRECTIVE_PROPERTY))
+				{
+					String property = chop(line, DIRECTIVE_PROPERTY);
+					String[] entry = property.split("=");
+					if (entry.length > 1)
+						getProperties().put(entry[0].toLowerCase().trim(), entry[1].trim());
+				}
+				// Append line to buffer.
+				script.append(line+EOL);
+			}
 		}
-		catch (IOException exp)
+		catch (Exception ioe)
 		{
-			throw new ScriptException(exp);
+			throw new ScriptException(ioe);
 		}
-		String script = buf.toString();
-		
-		// Skip SHEBANG line when present.
-		if (script.startsWith(SHEBANG))
-			script = script.substring(script.indexOf(EOL));
-		return script;
+		return script.toString();
 	}
 	
+	// Chop off the directive's head.
+	private String chop(String s, String head)
+	{
+		return s.substring(head.length()).trim();
+	}
+		
 	// Run a program using the JavaCode script engine.
 	private void run(String[] args)
 	{
 		// Create script file.
-		File script = new File(args[0]);
+		File scriptFile = new File(args[0]);
 		
 		// Verify script exists.
-		if ( script.exists() )
+		if ( scriptFile.exists() )
 		{
 			// Create a script engine manager and use this instance as the ScriptReader.
 			ScriptEngineFactory factory = new JavaCodeScriptEngineFactory(this);
@@ -92,7 +164,7 @@ public class Execute implements ScriptReader
 			ScriptContext ctx = new SimpleScriptContext();
 
 			// Add filename to engine context.
-			ctx.setAttribute(ScriptEngine.FILENAME, script.getName(), ScriptContext.ENGINE_SCOPE);
+			ctx.setAttribute(ScriptEngine.FILENAME, scriptFile.getName(), ScriptContext.ENGINE_SCOPE);
 			
 			// Add script arguments to engine context.
 			if ( args.length > 1 )
@@ -101,36 +173,55 @@ public class Execute implements ScriptReader
 				ctx.setAttribute(ScriptEngine.ARGV, arguments, ScriptContext.ENGINE_SCOPE);
 			}
 			
-			//////////////////////////////////
-			// Read, load and evaluate script.
-			//////////////////////////////////
-			try (Reader reader = new FileReader(script))
+			///////////////////////////////////////////
+			// Read, load, resolve and evaluate script.
+			///////////////////////////////////////////
+			try (Reader reader = new FileReader(scriptFile))
 			{
-				engine.eval(reader, ctx);
-			}
-			catch (IOException ioe)
-			{
-				errorln("cannot read script", ioe);
+				// Load script into a string and parse directives.
+				String script = loadScript(reader);
+				
+				// Set scripting context attribute to add a Main method.
+				ctx.setAttribute(JavaCodeScriptEngine.ADDMAIN, getAddMain(), ScriptContext.ENGINE_SCOPE);
+				
+				// Set console mode.
+				getConsole().setVerbose(isVerbose());
+				
+				// Add scripting context attributes.
+				ctx.setAttribute(JavaCodeScriptEngine.OPTIONS, getOptions(), ScriptContext.ENGINE_SCOPE);
+				
+				// Execute script code using a file reader.
+				engine.eval(script, ctx);
 			}
 			catch (ScriptException sex)
 			{
 				errorln("cannot evaluate script", sex);
 			}
+			catch (IOException ioe)
+			{
+				errorln("cannot read script", ioe);
+			}
 		}
 		else
-			errorln("script does not exist: "+script);
+			errorln("script does not exist: "+scriptFile);
 	}
     
+	// Get the console for this thread.
+	private static Console getConsole()
+	{
+		return Console.getStandard();
+	}
+	
     // Output an object to the standard error console.
     protected static void errorln(Object obj)
     {
-    	Console.getStandard().errorln(obj);
+    	getConsole().errorln(obj);
     }
     
     // Output an object and throwable to the standard error console.
     protected static void errorln(Object obj, Throwable err)
     {
-    	Console.getStandard().errorln(obj, err);
+    	getConsole().errorln(obj, err);
     }
 }
 // vi:set tabstop=4 hardtabs=4 shiftwidth=4:

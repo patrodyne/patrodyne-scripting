@@ -1,3 +1,3 @@
 #!./javabang
-//: addmain=true
+//= addmain=true
 System.out.println("Hello World!")

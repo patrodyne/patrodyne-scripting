@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,8 @@ public class JavaCompiler
 	 * @return The compiler provided with this platform or null if no compiler is provided
 	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	protected javax.tools.JavaCompiler getSystemJavaCompiler() throws ScriptException
+	protected javax.tools.JavaCompiler getSystemJavaCompiler()
+		throws ScriptException
 	{
 		if ( systemJavaCompiler == null )
 		{
@@ -62,7 +64,8 @@ public class JavaCompiler
 	 * @return A Java file manager tool.
 	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	protected StandardJavaFileManager getStandardFileManager() throws ScriptException
+	protected StandardJavaFileManager getStandardFileManager()
+		throws ScriptException
 	{
 		if ( standardFileManager == null)
 			standardFileManager = getSystemJavaCompiler().getStandardFileManager(null, null, null);
@@ -78,7 +81,8 @@ public class JavaCompiler
 	 * @return A memory map of class name and byte code pairs.
 	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	public Map<String, byte[]> compile(String fileName, String source) throws ScriptException
+	public Map<String, byte[]> compile(String fileName, String source)
+		throws ScriptException
 	{
 		PrintWriter err = new PrintWriter(Console.getStandard().getOutput());
 		return compile(source, fileName, err, null, null);
@@ -94,7 +98,8 @@ public class JavaCompiler
 	 * @return A memory map of class name and byte code pairs.
 	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	public Map<String, byte[]> compile(String fileName, String source, Writer err) throws ScriptException
+	public Map<String, byte[]> compile(String fileName, String source, Writer err)
+		throws ScriptException
 	{
 		return compile(fileName, source, err, null, null);
 	}
@@ -110,7 +115,8 @@ public class JavaCompiler
 	 * @return A memory map of class name and byte code pairs.
 	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	public Map<String, byte[]> compile(String fileName, String source, Writer err, String sourcePath) throws ScriptException
+	public Map<String, byte[]> compile(String fileName, String source, Writer err, String sourcePath)
+		throws ScriptException
 	{
 		return compile(fileName, source, err, sourcePath, null);
 	}
@@ -129,7 +135,29 @@ public class JavaCompiler
 	 * @return A memory map of class name and byte code pairs or null when compilation fails.
 	 * @throws ScriptException When the System does not provide a Java Compiler.
 	 */
-	public Map<String, byte[]> compile(String sourceName, String source, Writer err, String sourcePath, String classPath) throws ScriptException
+	public Map<String, byte[]> compile(String sourceName, String source, Writer err, String sourcePath, String classPath)
+		throws ScriptException
+	{
+		return compile(sourceName, source, err, sourcePath, classPath, null);
+	}
+	
+	/**
+	 * <p>Compile given source string and return byte codes as a memory map.</p>
+	 * 
+	 * <p>If the compilation fails, diagnostics are sent to the standard error stream.</p>
+	 * 
+	 * @param sourceName The file name to identify the source in diagnostics, etc.
+	 * @param source The string containing the source to be compiled
+	 * @param err The error writer where diagnostic messages are written.
+	 * @param sourcePath The location of additional .java source files.
+	 * @param classPath The location of additional .class files.
+	 * @param initialOptions Initial compiler options.
+	 * 
+	 * @return A memory map of class name and byte code pairs or null when compilation fails.
+	 * @throws ScriptException When the System does not provide a Java Compiler.
+	 */
+	public Map<String, byte[]> compile(String sourceName, String source, Writer err, String sourcePath, 
+		String classPath, String[] initialOptions) throws ScriptException
 	{
 		// A) Create a new memory JavaFileManager
 		MemoryJavaFileManager<StandardJavaFileManager> javaFileManager = 
@@ -139,7 +167,11 @@ public class JavaCompiler
 		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 		
 		// C) Java compiler options
-		List<String> options = createCompilerOptions(sourcePath, classPath);
+		List<String> options;
+		if ( initialOptions == null || (initialOptions.length == 0))
+			options = createCompilerOptions(sourcePath, classPath);
+		else
+			options = createCompilerOptions(sourcePath, classPath, initialOptions);
 		
 		// D) Prepare the compilation unit
 		//    1) create a list of JavaFileObjects
@@ -204,7 +236,7 @@ public class JavaCompiler
 	/**
 	 *  <p>Create Java compiler options for the given source path and class path.</p>
 	 *  
-	 *  <p>Options include:</p>
+	 *  <p>Default Options include:</p>
 	 *  <ul>
 	 *  <li><code>-Xlint:all</code> - enable all recommended warnings.</li>
 	 *  <li><code>-g:lines,vars</code> - enable debugging for line numbers and local variables.</li>
@@ -219,15 +251,35 @@ public class JavaCompiler
 	 */
 	protected List<String> createCompilerOptions(String sourcePath, String classPath)
 	{
-		List<String> options = new ArrayList<String>();
-		
-		// enable all recommended warnings.
-		options.add("-Xlint:all");
-		
-		// TODO: options.add("-verbose");
-		
-		// enable debugging for line numbers and local variables.
-		options.add("-g:lines,vars");
+		String[] initialOptions =
+		{
+		 	"-g:lines,vars", // enable debugging for line numbers and local variables.
+		 	"-Xlint:all" // enable all recommended warnings.
+		};
+		return createCompilerOptions(sourcePath, classPath, initialOptions);
+	}
+	
+	/**
+	 *  <p>Create Java compiler options for the given source path and class path.</p>
+	 *  
+	 *  <p>Options include:</p>
+	 *  <ul>
+	 *  <li><code>-Xlint:all</code> - enable all recommended warnings.</li>
+	 *  <li><code>-g:lines,vars</code> - enable debugging for line numbers and local variables.</li>
+	 *  <li><code>-sourcepath</code> - colon separated list of paths for source code resolution.</li>
+	 *  <li><code>-classpath</code> - colon separated list of paths or jars for class resolution.</li>
+	 *  </ul>
+	 *  
+	 *  @param sourcePath A colon separated list of paths for source code resolution.
+	 *  @param classPath A colon separated list of paths or jars for class resolution.
+	 *  @param initialOptions Initial compiler options.
+	 *  
+	 *  @return A list of compiler options as individual strings.
+	 */
+	protected List<String> createCompilerOptions(String sourcePath, String classPath, String[] initialOptions)
+	{
+		// Start option with initial options.
+		List<String> options = new ArrayList<String>(Arrays.asList(initialOptions));
 		
 		// Specify  the  source  code  path  to search for class or interface definitions. 
 		// As with the user class path, source path entries are separated by colons (:) and 

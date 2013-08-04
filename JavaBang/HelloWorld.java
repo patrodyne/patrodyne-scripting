@@ -1,10 +1,11 @@
 #!./javabang
 //@ http://repo1.maven.org/maven2/
-//= target/local/repository
+//: target/local/repository
 //+ org.apache.commons:commons-lang3:3.1
-//: offline=false
-//: verbose=false
-//: debug=false
+//= offline=false
+//= verbose=false
+//= debug=false
+//= options=-Xmaxerrs 3 -nowarn
 
 import org.apache.commons.lang3.*;
 

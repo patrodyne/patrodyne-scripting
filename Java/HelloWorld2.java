@@ -1,3 +1,3 @@
 #!./javash
-//: addmain=true
+//= addmain=true
 System.out.println("Hello World!")

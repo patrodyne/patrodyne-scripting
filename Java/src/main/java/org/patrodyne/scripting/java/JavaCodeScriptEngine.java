@@ -45,6 +45,8 @@ public class JavaCodeScriptEngine
 	public static final String SOURCEPATH = "sourcepath";
 	/** Represents the name of the context property for the class path. */
 	public static final String CLASSPATH = "classpath";
+	/** Represents the name of the context property for the compiler options. */
+	public static final String OPTIONS = "options";
 	/** Represents the name of the context property for the main class name. */
 	public static final String MAINCLASS = "mainClass";
 	/** Represents the name of the context property for add class directive. */
@@ -52,7 +54,7 @@ public class JavaCodeScriptEngine
 	/** Represents the name of the context property for parent loader. */
 	public static final String PARENTLOADER = "parentLoader";
 	// Represents an empty string array.
-	private static final String[] EMPTY_STRING_ARRAY = new String[0];
+	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 	private JavaCompiler compiler;
 	/**
@@ -193,13 +195,15 @@ public class JavaCodeScriptEngine
 		String sourceName = getFileName(ctx);
 		String sourcePath = getSourcePath(ctx);
 		String classPath = getClassPath(ctx);
+		String[] options = getOptions(ctx);
 		
 		// When directed, wrap the the source in a program 
 		// by adding a main method and class.
 		if ( getAddMain(ctx) )
 			source = getFactory().getProgram(source.split("[\\r\\n]+"));
 		
-		Map<String, byte[]> memoryMap = getCompiler().compile(sourceName, source, ctx.getErrorWriter(), sourcePath, classPath);
+		Map<String, byte[]> memoryMap =
+			getCompiler().compile(sourceName, source, ctx.getErrorWriter(), sourcePath, classPath, options);
 		
 		if (memoryMap == null)
 			throw new ScriptException("compilation failed");
@@ -320,7 +324,7 @@ public class JavaCodeScriptEngine
 			return "$unnamed.java";
 	}
 
-	// Get source path from the first of:
+	// Get script arguments from the first of:
 	// 1) ScriptContext: arguments
 	private static String[] getArguments(ScriptContext ctx)
 	{
@@ -363,6 +367,21 @@ public class JavaCodeScriptEngine
 				res = System.getProperty("java.class.path");
 			return res;
 		}
+	}
+
+	// Get compiler options from the first of:
+	// 1) ScriptContext: options
+	private static String[] getOptions(ScriptContext ctx)
+	{
+		int scope = ctx.getAttributesScope(OPTIONS);
+		if (scope != -1)
+		{
+			Object obj = ctx.getAttribute(OPTIONS, scope);
+			if (obj instanceof String[])
+				return (String[]) obj;
+		}
+		// return zero length array
+		return EMPTY_STRING_ARRAY;
 	}
 
 	private static String getMainClassName(ScriptContext ctx)
