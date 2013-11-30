@@ -22,6 +22,7 @@ import org.patrodyne.scripting.java.Console;
 import org.patrodyne.scripting.java.JavaCodeScriptEngine;
 import org.patrodyne.scripting.java.JavaCodeScriptEngineFactory;
 import org.patrodyne.scripting.java.ScriptReader;
+import org.patrodyne.scripting.java.Verbose;
 import org.patrodyne.scripting.javabang.aether.ResolveTransitiveDependencies;
 import org.sonatype.aether.RepositoryException;
 import org.sonatype.aether.resolution.ArtifactResult;
@@ -224,30 +225,27 @@ public class Execute implements ScriptReader
 		return offline;
 	}
 	
-	private Boolean verbose;
+	private Verbose verbose;
 	/**
-	 * Is the resolution mode verbose?
-	 * @return True when output is detailed; otherwise, false.
+	 * Get the verbosity level.
+	 * @return Govern the amount of feedback.
 	 */
-	public boolean isVerbose()
+	public Verbose getVerbose()
 	{
 		if ( verbose == null )
-			verbose = new Boolean(getProperties().getProperty("verbose", "false"));
+		{
+			try
+			{
+				verbose = Verbose.valueOf(getProperties().getProperty("verbose", "BRIEF").toUpperCase());
+			}
+			catch (IllegalArgumentException iae)
+			{
+				errorln("verbose options: "+Verbose.options(), iae);
+			}
+		}
 		return verbose;
 	}
-
-	private Boolean debug;
-	/**
-	 * Is the debug mode on?
-	 * @return True when output is extra detailed; otherwise, false.
-	 */
-	public boolean isDebug()
-	{
-		if ( debug == null )
-			debug = new Boolean(getProperties().getProperty("debug", "false"));
-		return debug;
-	}
-
+	
 	private String[] options;
 	/**
 	 * Get compiler options.
@@ -380,7 +378,7 @@ public class Execute implements ScriptReader
 				ctx.setAttribute(JavaCodeScriptEngine.ADDMAIN, getAddMain(), ScriptContext.ENGINE_SCOPE);
 				
 				// Set console mode.
-				getConsole().setVerbose(isVerbose());
+				getConsole().setVerbose(getVerbose());
 				
 				// Resolve Transitive Dependencies
 				ResolveTransitiveDependencies rtd = new ResolveTransitiveDependencies(this);

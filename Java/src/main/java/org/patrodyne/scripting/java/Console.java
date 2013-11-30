@@ -51,20 +51,20 @@ public class Console
 		this.output = stream;
 	}
 
-	private boolean verbose = false;
+	private Verbose verbose = Verbose.BRIEF;
 	/**
-	 * A flag to allow detailed output. The default is false.
-	 * @return the verbose flag.
+	 * A verbosity level to allow detailed output. The default is brief.
+	 * @return The verbose level.
 	 */
-	public boolean isVerbose()
+	public Verbose getVerbose()
 	{
 		return verbose;
 	}
 	/**
-	 * Set flag to allow detailed output.
+	 * Set verbose level to allow detailed output.
 	 * @param verbose the verbose flag for detailed output.
 	 */
-	public void setVerbose(boolean verbose)
+	public void setVerbose(Verbose verbose)
 	{
 		this.verbose = verbose;
 	}
@@ -92,7 +92,7 @@ public class Console
 	 */
 	public void print(Object obj)
 	{
-		if ( isVerbose() && (obj != null) )
+		if ( (getVerbose().atLeast(Verbose.DEBUG)) && (obj != null) )
 			getOutput().print(obj.toString());
 	}
 	
@@ -104,7 +104,7 @@ public class Console
 	 */
 	public void println(Object obj)
 	{
-		if ( isVerbose() && (obj != null) )
+		if ( (getVerbose().atLeast(Verbose.DEBUG)) && (obj != null) )
 			getOutput().println(obj.toString());
 	}
 
@@ -167,7 +167,7 @@ public class Console
 	{
 		if ( err != null )
 		{
-			if (isVerbose())
+			if ((getVerbose().atLeast(Verbose.DEBUG)))
 				errorln(err);
 			else
 			{
@@ -177,7 +177,7 @@ public class Console
 					error(err);
 			}
 		}
-		if ( isVerbose() && (cause != null) )
+		if ( (getVerbose().atLeast(Verbose.DEBUG)) && (cause != null) )
 			cause.printStackTrace(getOutput());
 		errorln(cause);
 	}

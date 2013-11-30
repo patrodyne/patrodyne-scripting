@@ -3,8 +3,7 @@
 //: target/local/repository
 //+ org.apache.commons:commons-lang3:3.1
 //= offline=false
-//= verbose=false
-//= debug=false
+//= verbose=trace
 //= options=-Xmaxerrs 3 -nowarn
 
 import org.apache.commons.lang3.*;

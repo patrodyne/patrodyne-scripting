@@ -81,22 +81,22 @@ public class RepositorySystemFactory
 		this.offline = offline;
 	}
 
-	private boolean debug;
+	private boolean trace;
 	/**
-	 * Is debug mode on.
-	 * @return the debug mode
+	 * Is trace mode on.
+	 * @return the trace mode
 	 */
-	public boolean isDebug()
+	protected boolean isTrace()
 	{
-		return debug;
+		return trace;
 	}
 	/**
-	 * Set debug mode for extra output.
-	 * @param debug The debug mode to set
+	 * Set trace mode for extra output.
+	 * @param trace The trace mode to set
 	 */
-	public void setDebug(boolean debug)
+	protected void setTrace(boolean debug)
 	{
-		this.debug = debug;
+		this.trace = debug;
 	}
 	/**
 	 * Construct factory with repository configurations.
@@ -110,7 +110,7 @@ public class RepositorySystemFactory
 		setLocalRepository(localRepository);
 		setRemoteRepositories(remoteRepositories);
 		setOffline(offline);
-		setDebug(debug);
+		setTrace(debug);
 	}
 	
 	/**
@@ -141,7 +141,7 @@ public class RepositorySystemFactory
 
 		// Add console listeners.
 		session.setTransferListener( new ConsoleTransferListener() );
-		if (isDebug())
+		if (isTrace())
 			session.setRepositoryListener( new ConsoleRepositoryListener() );
 
 		// uncomment to generate dirty trees

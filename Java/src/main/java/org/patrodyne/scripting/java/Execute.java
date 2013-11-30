@@ -53,15 +53,15 @@ public class Execute implements ScriptReader
 		return new Boolean(getProperties().getProperty(JavaCodeScriptEngine.ADDMAIN, "false"));
 	}
 	
-	private Boolean verbose;
+	private Verbose verbose;
 	/**
-	 * Is the resolution mode verbose?
-	 * @return True when output is detailed; otherwise, false.
+	 * Get the verbosity level.
+	 * @return Govern the amount of feedback.
 	 */
-	public boolean isVerbose()
+	public Verbose getVerbose()
 	{
 		if ( verbose == null )
-			verbose = new Boolean(getProperties().getProperty("verbose", "false"));
+			verbose = Verbose.valueOf(getProperties().getProperty("verbose", "BRIEF").toUpperCase());
 		return verbose;
 	}
 	
@@ -185,7 +185,7 @@ public class Execute implements ScriptReader
 				ctx.setAttribute(JavaCodeScriptEngine.ADDMAIN, getAddMain(), ScriptContext.ENGINE_SCOPE);
 				
 				// Set console mode.
-				getConsole().setVerbose(isVerbose());
+				getConsole().setVerbose(getVerbose());
 				
 				// Add scripting context attributes.
 				ctx.setAttribute(JavaCodeScriptEngine.OPTIONS, getOptions(), ScriptContext.ENGINE_SCOPE);

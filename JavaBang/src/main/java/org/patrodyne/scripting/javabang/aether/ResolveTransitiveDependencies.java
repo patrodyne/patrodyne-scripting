@@ -6,6 +6,7 @@ package org.patrodyne.scripting.javabang.aether;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.patrodyne.scripting.java.Verbose;
 import org.patrodyne.scripting.javabang.Execute;
 import org.patrodyne.scripting.javabang.aether.util.ConsoleDependencyGraphDumper;
 import org.patrodyne.scripting.javabang.aether.util.RepositorySystemFactory;
@@ -71,7 +72,7 @@ public class ResolveTransitiveDependencies
 				getContext().getLocalRepository(), 
 				getContext().getRemoteRepositories(),
 				getContext().isOffline(),
-				getContext().isDebug()
+				getContext().getVerbose().atLeast(Verbose.TRACE)
 			);
 		
 		// The main entry point to the repository system.
