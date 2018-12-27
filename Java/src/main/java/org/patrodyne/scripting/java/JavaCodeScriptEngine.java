@@ -351,22 +351,33 @@ public class JavaCodeScriptEngine
 			return System.getProperty(SYSPROP_PREFIX + SOURCEPATH);
 	}
 
-	// Get class path from the first of:
+	// Get class path from all of:
 	// 1) ScriptContext: classpath
 	// 2) -Dorg.patrodyne.scripting.java.classpath
+	// Skip this. It in the parent class loader:
 	// 3) -Djava.class.path
 	private static String getClassPath(ScriptContext ctx)
 	{
+		String ps = System.getProperty("path.separator", ":");
+		StringBuilder classpath = new StringBuilder();
 		int scope = ctx.getAttributesScope(CLASSPATH);
 		if (scope != -1)
-			return ctx.getAttribute(CLASSPATH).toString();
-		else
+			classpath.append(ctx.getAttribute(CLASSPATH).toString());
+		String path = System.getProperty(SYSPROP_PREFIX + CLASSPATH);
+		if ((path != null) && !path.isEmpty())
 		{
-			String res = System.getProperty(SYSPROP_PREFIX + CLASSPATH);
-			if (res == null)
-				res = System.getProperty("java.class.path");
-			return res;
+			if (classpath.length() > 0)
+				classpath.append(ps);
+			classpath.append(path);
 		}
+//		path = System.getProperty("java.class.path");
+//		if ((path != null) && !path.isEmpty())
+//		{
+//			if (classpath.length() > 0)
+//				classpath.append(ps);
+//			classpath.append(path);
+//		}
+		return classpath.toString();
 	}
 
 	// Get compiler options from the first of:

@@ -1,6 +1,12 @@
 #!/bin/sh
+SOURCEPATH="."
+CLASSPATH="."
+JARVERS="1.0.1-SNAPSHOT"
+#JARPATH="${HOME}/.m2/repository/org/patrodyne/patrodyne-scripting-javabang/${JARVERS}"
+JARPATH="target"
+JARNAME="patrodyne-scripting-javabang-${JARVERS}-shaded.jar"
 java \
-	-Dorg.patrodyne.scripting.java.sourcepath="." \
-	-Dorg.patrodyne.scripting.java.classpath="." \
-	-jar target/patrodyne-scripting-javabang-*.jar $*
+	-Dorg.patrodyne.scripting.java.sourcepath="${SOURCEPATH}" \
+	-Dorg.patrodyne.scripting.java.classpath="${CLASSPATH}" \
+	-jar "${JARPATH}/${JARNAME}" "$@"
 # vi:set tabstop=4 hardtabs=4 shiftwidth=4:

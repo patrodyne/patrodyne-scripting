@@ -19,6 +19,7 @@ class HelloWorld
 			println("\t"+argno+": "+args[argno]);
 		println("Classpath");
 		Utility.dumpClasspath(HelloWorld.class.getClassLoader());
+		println("Resource URL: "+HelloWorld.class.getResource("/resource.txt"));
 		println("-- Main -----------------------------------");
 		println("");
 	}

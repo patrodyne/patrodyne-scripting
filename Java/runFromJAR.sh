@@ -2,7 +2,7 @@
 if [ -r target ]; then
 	java \
 		-Dorg.patrodyne.scripting.java.sourcepath="demo" \
-		-Dorg.patrodyne.scripting.java.classpath="demo" \
+		-Dorg.patrodyne.scripting.java.classpath="target/classes" \
 		-jar target/patrodyne-scripting-java-*.jar \
 		demo/HelloWorld.java "arg0" "arg1" "arg2"
 else

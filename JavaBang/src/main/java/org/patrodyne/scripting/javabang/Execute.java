@@ -3,10 +3,13 @@
 package org.patrodyne.scripting.javabang;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +24,7 @@ import javax.script.SimpleScriptContext;
 import org.patrodyne.scripting.java.Console;
 import org.patrodyne.scripting.java.JavaCodeScriptEngine;
 import org.patrodyne.scripting.java.JavaCodeScriptEngineFactory;
+import org.patrodyne.scripting.java.MemoryClassLoader;
 import org.patrodyne.scripting.java.ScriptReader;
 import org.patrodyne.scripting.java.Verbose;
 import org.patrodyne.scripting.javabang.aether.ResolveTransitiveDependencies;
@@ -385,6 +389,7 @@ public class Execute implements ScriptReader
 				List<ArtifactResult> artifactResults = rtd.execute();
 				
 				DynamicURLClassLoader ducl = new DynamicURLClassLoader();
+				addClassPath(ducl);
 				for ( ArtifactResult artifactResult : artifactResults )
 					ducl.addURL(artifactResult.getArtifact().getFile().toURI().toURL());
 				
@@ -412,6 +417,50 @@ public class Execute implements ScriptReader
 		else
 			errorln("script does not exist: "+scriptFile);
 	}
+
+	// Need to add the declared classpath to the DUCL, 
+	// so the dynamic artifacts can find resources (example: log4j.properties)
+	private void addClassPath(DynamicURLClassLoader ducl)
+	{
+		String path = 
+			System.getProperty(JavaCodeScriptEngine.SYSPROP_PREFIX + JavaCodeScriptEngine.CLASSPATH);
+		if ((path != null) && !path.isEmpty())
+		{
+			for (URL url : MemoryClassLoader.toURLs(path))
+			{
+				ducl.addURL(url);
+				// For directories, add jars.
+				if ("file".equals(url.getProtocol()))
+				{
+					File file = new File(url.getPath());
+					if (file.isDirectory())
+					{
+						for (File jar : file.listFiles(classpathFilter))
+						{
+							try
+							{
+								ducl.addURL(jar.toURI().toURL());
+							}
+							catch (MalformedURLException mue)
+							{
+								errorln("Warning: classpath", mue);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private FileFilter classpathFilter = new FileFilter()
+	{
+		@Override
+		public boolean accept(File pathname)
+		{
+			return pathname.isFile() && 
+				pathname.getName().toLowerCase().endsWith(".jar");
+		}
+	};
 	
 	// Get the 'addmain' directive as a boolean.
 	private boolean getAddMain()

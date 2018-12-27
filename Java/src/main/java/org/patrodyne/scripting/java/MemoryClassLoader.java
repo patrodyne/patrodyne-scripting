@@ -129,7 +129,7 @@ public final class MemoryClassLoader
 
 	// Convert a class path to an array of URLs.
 	// A null class path returns an empty array.
-	private static URL[] toURLs(String classPath)
+	public static URL[] toURLs(String classPath)
 	{
 		if (classPath == null)
 			return new URL[0];
@@ -148,7 +148,7 @@ public final class MemoryClassLoader
 				}
 				catch (MalformedURLException mue)
 				{
-					// Skip this file.
+					errorln("Warning: classpath, file not found "+file);
 				}
 			}
 			else
@@ -159,12 +159,17 @@ public final class MemoryClassLoader
 				}
 				catch (MalformedURLException mue)
 				{
-					// Skip this token.
+					errorln("Warning: classpath, file not found "+file);
 				}
 			}
 		}
 		// Convert the list to an array of URLs,
 		return urls.toArray(new URL[urls.size()]);
+	}
+	
+	private static void errorln(Object obj)
+	{
+		Console.getStandard().errorln(obj);	
 	}
 }
 // vi:set tabstop=4 hardtabs=4 shiftwidth=4:
