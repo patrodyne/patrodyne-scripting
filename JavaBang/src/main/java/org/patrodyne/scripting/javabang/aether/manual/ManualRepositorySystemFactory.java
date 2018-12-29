@@ -37,7 +37,6 @@ public class ManualRepositorySystemFactory
 		locator.setServices( WagonProvider.class, new ManualWagonProvider() );
 
 		RepositorySystem system = locator.getService( RepositorySystem.class );
-		System.err.println("system...: "+system);
 		return system;
 	}
 }

@@ -138,9 +138,6 @@ public class RepositorySystemFactory
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
 		LocalRepository localRepo = new LocalRepository( getLocalRepository() );
-		System.err.println("localRepo: "+localRepo);
-		System.err.println("system...: "+system);
-		System.err.println("session..: "+session);
 		session.setLocalRepositoryManager( system.newLocalRepositoryManager( session, localRepo ) );
 		session.setOffline(isOffline());
 
@@ -148,38 +145,6 @@ public class RepositorySystemFactory
 		session.setTransferListener( new ConsoleTransferListener() );
 		if (isTrace())
 			session.setRepositoryListener( new ConsoleRepositoryListener() );
-
-
-//		DefaultRepositorySystemSession session = new DefaultRepositorySystemSession();
-
-//		LocalRepository localRepo = new LocalRepository( getLocalRepository() );
-//		System.err.println("localRepo: "+localRepo);
-//		System.err.println("system...: "+system);
-//		System.err.println("session..: "+session);
-//		session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );
-//		session.setOffline(isOffline());
-
-		// Add console listeners.
-//		session.setTransferListener( new ConsoleTransferListener() );
-//		if (isTrace())
-//			session.setRepositoryListener( new ConsoleRepositoryListener() );
-
-
-
-
-//		MavenRepositorySystemSession session = new MavenRepositorySystemSession();
-
-//		LocalRepository localRepo = new LocalRepository( getLocalRepository() );
-//		session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );
-//		session.setOffline(isOffline());
-
-		// Add console listeners.
-//		session.setTransferListener( new ConsoleTransferListener() );
-//		if (isTrace())
-//			session.setRepositoryListener( new ConsoleRepositoryListener() );
-
-		// uncomment to generate dirty trees
-		// session.setDependencyGraphTransformer( null );
 
 		return session;
 	}
