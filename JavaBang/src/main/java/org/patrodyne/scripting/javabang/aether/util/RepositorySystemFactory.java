@@ -6,12 +6,14 @@ package org.patrodyne.scripting.javabang.aether.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.repository.internal.MavenRepositorySystemSession;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RemoteRepository.Builder;
 import org.patrodyne.scripting.javabang.aether.manual.ManualRepositorySystemFactory;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.RemoteRepository;
 
 /**
  * A factory to boot the repository system and a repository system session.
@@ -20,10 +22,10 @@ public class RepositorySystemFactory
 {
 	// Represents the standard WagonRepositoryConnector type.
 	private static final String WAGON_CONNECTOR_TYPE = "default";
-	
+
 	private String localRepository;
 	/**
-	 * Get the location of the repository on the local file system used to 
+	 * Get the location of the repository on the local file system used to
 	 * cache contents of remote repositories and to store locally installed
 	 * artifacts.
 	 * @return The local repository.
@@ -33,7 +35,7 @@ public class RepositorySystemFactory
 		return localRepository;
 	}
 	/*
-	 * Set the location of the repository on the local file system used to 
+	 * Set the location of the repository on the local file system used to
 	 * cache contents of remote repositories and to store locally installed
 	 * artifacts.
 	 * @param localRepository The local repository to set.
@@ -100,7 +102,7 @@ public class RepositorySystemFactory
 	}
 	/**
 	 * Construct factory with repository configurations.
-	 * 
+	 *
 	 * @param localRepository The local repository path.
 	 * @param remoteRepositories The remote repository locations.
 	 */
@@ -112,11 +114,11 @@ public class RepositorySystemFactory
 		setOffline(offline);
 		setTrace(debug);
 	}
-	
+
 	/**
-	 * Produce a new RepositorySystem instance that employs Aether's 
+	 * Produce a new RepositorySystem instance that employs Aether's
 	 * built-in service locator infrastructure to wire up the system's components.
-	 * 
+	 *
 	 * @return An instance of Aether's repository system.
 	 */
 	public RepositorySystem newRepositorySystem()
@@ -126,23 +128,55 @@ public class RepositorySystemFactory
 
 	/**
 	 * Produce a new session instance for the RepositorySystem.
-	 * 
+	 *
 	 * @param system An instance of the RepositorySystem.
-	 * 
+	 *
 	 * @return A session containing settings and components for a RepositorySystem.
 	 */
 	public RepositorySystemSession newRepositorySystemSession( RepositorySystem system )
 	{
-		MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
 		LocalRepository localRepo = new LocalRepository( getLocalRepository() );
-		session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );
+		System.err.println("localRepo: "+localRepo);
+		System.err.println("system...: "+system);
+		System.err.println("session..: "+session);
+		session.setLocalRepositoryManager( system.newLocalRepositoryManager( session, localRepo ) );
 		session.setOffline(isOffline());
 
 		// Add console listeners.
 		session.setTransferListener( new ConsoleTransferListener() );
 		if (isTrace())
 			session.setRepositoryListener( new ConsoleRepositoryListener() );
+
+
+//		DefaultRepositorySystemSession session = new DefaultRepositorySystemSession();
+
+//		LocalRepository localRepo = new LocalRepository( getLocalRepository() );
+//		System.err.println("localRepo: "+localRepo);
+//		System.err.println("system...: "+system);
+//		System.err.println("session..: "+session);
+//		session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );
+//		session.setOffline(isOffline());
+
+		// Add console listeners.
+//		session.setTransferListener( new ConsoleTransferListener() );
+//		if (isTrace())
+//			session.setRepositoryListener( new ConsoleRepositoryListener() );
+
+
+
+
+//		MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+
+//		LocalRepository localRepo = new LocalRepository( getLocalRepository() );
+//		session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );
+//		session.setOffline(isOffline());
+
+		// Add console listeners.
+//		session.setTransferListener( new ConsoleTransferListener() );
+//		if (isTrace())
+//			session.setRepositoryListener( new ConsoleRepositoryListener() );
 
 		// uncomment to generate dirty trees
 		// session.setDependencyGraphTransformer( null );
@@ -160,8 +194,8 @@ public class RepositorySystemFactory
 		int id = 0;
 		for (String repository : getRemoteRepositories())
 		{
-			repositories.add(new RemoteRepository( "RemoteRepository-"+(id++), 
-				WAGON_CONNECTOR_TYPE, repository ));
+			Builder builder = new RemoteRepository.Builder("RemoteRepository-"+(id++), WAGON_CONNECTOR_TYPE, repository);
+			repositories.add(builder.build());
 		}
 		return repositories;
 	}

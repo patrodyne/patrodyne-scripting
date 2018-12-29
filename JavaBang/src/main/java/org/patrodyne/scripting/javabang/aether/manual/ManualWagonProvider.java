@@ -5,7 +5,7 @@ package org.patrodyne.scripting.javabang.aether.manual;
 
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.http.LightweightHttpWagon;
-import org.sonatype.aether.connector.wagon.WagonProvider;
+import org.eclipse.aether.connector.wagon.WagonProvider;
 
 /**
  * A simplistic provider for wagon instances when no Plexus-compatible IoC container is used.

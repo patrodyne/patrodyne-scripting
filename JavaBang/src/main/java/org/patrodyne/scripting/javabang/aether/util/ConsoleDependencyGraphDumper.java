@@ -6,8 +6,8 @@ package org.patrodyne.scripting.javabang.aether.util;
 import java.io.PrintStream;
 
 import org.patrodyne.scripting.java.Console;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.graph.DependencyVisitor;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.DependencyVisitor;
 
 /**
  * A dependency visitor that dumps the graph to the console.

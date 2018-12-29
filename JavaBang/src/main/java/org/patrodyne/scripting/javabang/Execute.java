@@ -21,6 +21,8 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import org.eclipse.aether.RepositoryException;
+import org.eclipse.aether.resolution.ArtifactResult;
 import org.patrodyne.scripting.java.Console;
 import org.patrodyne.scripting.java.JavaCodeScriptEngine;
 import org.patrodyne.scripting.java.JavaCodeScriptEngineFactory;
@@ -28,43 +30,41 @@ import org.patrodyne.scripting.java.MemoryClassLoader;
 import org.patrodyne.scripting.java.ScriptReader;
 import org.patrodyne.scripting.java.Verbose;
 import org.patrodyne.scripting.javabang.aether.ResolveTransitiveDependencies;
-import org.sonatype.aether.RepositoryException;
-import org.sonatype.aether.resolution.ArtifactResult;
 
 /**
- * Execute a program using the JavaCode script engine 
+ * Execute a program using the JavaCode script engine
  * and use Maven/Aether to resolve dependencies.
- * 
+ *
  * Declare locators for remote repositories using special
  * comments.
- * 
+ *
  * <pre>
  * //@ http:/remote.repository.1
  * //@ http:/remote.repository.2
  * </pre>
- * 
+ *
  * Declare the path to your local repository.
- * 
+ *
  * <pre>
  * //: /path/to/local/repository
  * </pre>
- * 
- * Dependencies are declared in the script using 
+ *
+ * Dependencies are declared in the script using
  * Maven artifact coordinates.
- * 
+ *
  * <pre>
  * //+ groupId:artifactId:version
  * //+ groupId:artifactId:packaging:version
  * //+ groupId:artifactId:packaging:classifier:version
  * </pre>
- * 
+ *
  * Add more source file paths.
- * 
+ *
  * <pre>
  * //& /absolute-path/AnotherSource.java
  * //& relative-path/AnotherSource.java
  * </pre>
- * 
+ *
  * @author Rick O'Sullivan
  */
 public class Execute implements ScriptReader
@@ -77,15 +77,15 @@ public class Execute implements ScriptReader
 	public static String DIRECTIVE_INCLUDE_DEPENDENCY = DIRECTIVE_COMMENT+"+";
 	public static String DIRECTIVE_EXCLUDE_DEPENDENCY = DIRECTIVE_COMMENT+"-";
 	public static String DIRECTIVE_INCLUDE_SOURCEPATH = DIRECTIVE_COMMENT+"&";
-	
+
 	// Directive Default Values
-	private static String DEFAULT_LOCAL_REPOSITORY = 
+	private static String DEFAULT_LOCAL_REPOSITORY =
 		System.getProperty("user.home")+"/.m2/repository";
 	private static String DEFAULT_REMOTE_REPOSITORY = "http://repo1.maven.org/maven2/";
-	
+
 	private String localRepository;
 	/**
-	 * Get the location of the repository on the local file system used to 
+	 * Get the location of the repository on the local file system used to
 	 * cache contents of remote repositories and to store locally installed
 	 * artifacts.
 	 * @return The local repository.
@@ -97,7 +97,7 @@ public class Execute implements ScriptReader
 		return localRepository;
 	}
 	/**
-	 * Set the location of the repository on the local file system used to 
+	 * Set the location of the repository on the local file system used to
 	 * cache contents of remote repositories and to store locally installed
 	 * artifacts.
 	 * @param localRepository The local repository to set.
@@ -132,7 +132,7 @@ public class Execute implements ScriptReader
 	private List<String> includeDependencies;
 	/**
 	 * Get the list of dependencies to include in the classpath, using
-	 * the Maven coordinate form: 
+	 * the Maven coordinate form:
 	 * <code>groupId:artifactId:packaging:classifier:version</code>.
 	 * @return The list of dependencies to include in the classpath.
 	 */
@@ -144,7 +144,7 @@ public class Execute implements ScriptReader
 	}
 	/**
 	 * Set the list of dependencies to include in the classpath, using
-	 * the Maven coordinate form: 
+	 * the Maven coordinate form:
 	 * <code>groupId:artifactId:packaging:classifier:version</code>.
 	 * @param includeDependencies The list of included dependencies to set.
 	 */
@@ -156,7 +156,7 @@ public class Execute implements ScriptReader
 	private List<String> excludeDependencies;
 	/**
 	 * Get the list of dependencies to exclude from the classpath, using
-	 * the Maven coordinate form: 
+	 * the Maven coordinate form:
 	 * <code>groupId:artifactId:packaging:classifier:version</code>.
 	 * @return The list of dependencies to exclude in the classpath.
 	 */
@@ -168,7 +168,7 @@ public class Execute implements ScriptReader
 	}
 	/**
 	 * Set the list of dependencies to exclude from the classpath, using
-	 * the Maven coordinate form: 
+	 * the Maven coordinate form:
 	 * <code>groupId:artifactId:packaging:classifier:version</code>.
 	 * @param excludeDependencies The list of excluded dependencies to set.
 	 */
@@ -196,7 +196,7 @@ public class Execute implements ScriptReader
 	{
 		this.includeSourcePaths = includeSourcePaths;
 	}
-	
+
 	private Properties properties;
 	/**
 	 * Get properties for Maven/Aether configuration.
@@ -216,7 +216,7 @@ public class Execute implements ScriptReader
 	{
 		this.properties = properties;
 	}
-	
+
 	private Boolean offline;
 	/**
 	 * Is the resolution mode offline?
@@ -228,7 +228,7 @@ public class Execute implements ScriptReader
 			offline = new Boolean(getProperties().getProperty("offline", "false"));
 		return offline;
 	}
-	
+
 	private Verbose verbose;
 	/**
 	 * Get the verbosity level.
@@ -249,7 +249,7 @@ public class Execute implements ScriptReader
 		}
 		return verbose;
 	}
-	
+
 	private String[] options;
 	/**
 	 * Get compiler options.
@@ -260,16 +260,16 @@ public class Execute implements ScriptReader
 		if ( options == null )
 		{
 			String property = getProperties().getProperty("options", null);
-			options = ((property != null) && !property.isEmpty()) 
+			options = ((property != null) && !property.isEmpty())
 					? property.split("\\s+") : JavaCodeScriptEngine.EMPTY_STRING_ARRAY;
 		}
 		return options;
 	}
-	
+
 	/**
 	 * Entry point for command line invocation of the JavaCode
 	 * Script Engine.
-	 * 
+	 *
 	 * @param args - command line options.
 	 */
 	public static void main(String[] args)
@@ -282,16 +282,16 @@ public class Execute implements ScriptReader
 		else
 			errorln("Usage: java -jar patrodyne-scripting-javabang-X.X.X.jar <filename> [args]");
 	}
-	
-	/** 
-	 * Load a Java source script into a string, parse directives 
+
+	/**
+	 * Load a Java source script into a string, parse directives
 	 * and skip shebang, when present.
-	 * 
+	 *
 	 * @param reader An I/O Reader bound to a Java source script.
-	 * 
+	 *
 	 * @return A string containing the source script.
 	 * @throws ScriptException When the source cannot be loaded.
-	 * 
+	 *
 	 * @see org.patrodyne.scripting.java.ScriptReader#readScript(java.io.Reader)
 	 */
 	@Override
@@ -335,34 +335,34 @@ public class Execute implements ScriptReader
 		}
 		return script.toString();
 	}
-	
+
 	// Chop off the directive's head.
 	private String chop(String s, String head)
 	{
 		return s.substring(head.length()).trim();
 	}
-	
+
 	// Run a program using the JavaCode script engine.
 	private void run(String[] args)
 	{
 		// Create script file.
 		File scriptFile = new File(args[0]);
-		
+
 		// Verify script exists.
 		if ( scriptFile.exists() )
 		{
 			// Create a script engine manager and use this instance as the ScriptReader.
 			ScriptEngineFactory factory = new JavaCodeScriptEngineFactory(this);
-			
+
 			// Create a script engine.
 			ScriptEngine engine = factory.getScriptEngine();
-			
+
 			// Create a simple script context.
 			ScriptContext ctx = new SimpleScriptContext();
 
 			// Add filename to engine context.
 			ctx.setAttribute(ScriptEngine.FILENAME, scriptFile.getName(), ScriptContext.ENGINE_SCOPE);
-			
+
 			// Add script arguments to engine context.
 			if ( args.length > 1 )
 			{
@@ -377,27 +377,27 @@ public class Execute implements ScriptReader
 			{
 				// Load script into a string and parse directives.
 				String script = loadScript(reader);
-				
+
 				// Set scripting context attribute to add a Main method.
 				ctx.setAttribute(JavaCodeScriptEngine.ADDMAIN, getAddMain(), ScriptContext.ENGINE_SCOPE);
-				
+
 				// Set console mode.
 				getConsole().setVerbose(getVerbose());
-				
+
 				// Resolve Transitive Dependencies
 				ResolveTransitiveDependencies rtd = new ResolveTransitiveDependencies(this);
 				List<ArtifactResult> artifactResults = rtd.execute();
-				
+
 				DynamicURLClassLoader ducl = new DynamicURLClassLoader();
 				addClassPath(ducl);
 				for ( ArtifactResult artifactResult : artifactResults )
 					ducl.addURL(artifactResult.getArtifact().getFile().toURI().toURL());
-				
+
 				// Add scripting context attributes.
 				ctx.setAttribute(JavaCodeScriptEngine.OPTIONS, getOptions(), ScriptContext.ENGINE_SCOPE);
 				ctx.setAttribute(JavaCodeScriptEngine.CLASSPATH, classpath(artifactResults), ScriptContext.ENGINE_SCOPE);
 				ctx.setAttribute(JavaCodeScriptEngine.PARENTLOADER, ducl, ScriptContext.ENGINE_SCOPE);
-				
+
 				// Execute script code using a file reader.
 				engine.eval(script, ctx);
 			}
@@ -418,11 +418,11 @@ public class Execute implements ScriptReader
 			errorln("script does not exist: "+scriptFile);
 	}
 
-	// Need to add the declared classpath to the DUCL, 
+	// Need to add the declared classpath to the DUCL,
 	// so the dynamic artifacts can find resources (example: log4j.properties)
 	private void addClassPath(DynamicURLClassLoader ducl)
 	{
-		String path = 
+		String path =
 			System.getProperty(JavaCodeScriptEngine.SYSPROP_PREFIX + JavaCodeScriptEngine.CLASSPATH);
 		if ((path != null) && !path.isEmpty())
 		{
@@ -451,23 +451,23 @@ public class Execute implements ScriptReader
 			}
 		}
 	}
-	
+
 	private FileFilter classpathFilter = new FileFilter()
 	{
 		@Override
 		public boolean accept(File pathname)
 		{
-			return pathname.isFile() && 
+			return pathname.isFile() &&
 				pathname.getName().toLowerCase().endsWith(".jar");
 		}
 	};
-	
+
 	// Get the 'addmain' directive as a boolean.
 	private boolean getAddMain()
 	{
 		return new Boolean(getProperties().getProperty(JavaCodeScriptEngine.ADDMAIN, "false"));
 	}
-	
+
 	// Generate classpath from resolved artifacts.
 	private String classpath(List<ArtifactResult> artifactResults)
 	{
@@ -486,19 +486,19 @@ public class Execute implements ScriptReader
 		}
 		return classpath.toString();
 	}
-	
+
 	// Get the console for this thread.
 	private static Console getConsole()
 	{
 		return Console.getStandard();
 	}
-	
+
 	// Output an object to the standard error console.
 	protected static void errorln(Object obj)
 	{
 		getConsole().errorln(obj);
 	}
-	
+
 	// Output an object and throwable to the standard error console.
 	protected static void errorln(Object obj, Throwable err)
 	{

@@ -6,24 +6,24 @@ package org.patrodyne.scripting.javabang.aether;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.aether.RepositoryException;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyFilter;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.util.filter.DependencyFilterUtils;
 import org.patrodyne.scripting.java.Verbose;
 import org.patrodyne.scripting.javabang.Execute;
 import org.patrodyne.scripting.javabang.aether.util.ConsoleDependencyGraphDumper;
 import org.patrodyne.scripting.javabang.aether.util.RepositorySystemFactory;
-import org.sonatype.aether.RepositoryException;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyFilter;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactResult;
-import org.sonatype.aether.resolution.DependencyRequest;
-import org.sonatype.aether.resolution.DependencyResult;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.artifact.JavaScopes;
-import org.sonatype.aether.util.filter.DependencyFilterUtils;
 
 /**
  * Resolves the transitive (compile) dependencies of an artifact.
@@ -50,7 +50,7 @@ public class ResolveTransitiveDependencies
 
 	/**
 	 * Construct with the context for execution.
-	 * 
+	 *
 	 * @param context The context to execute.
 	 */
 	public ResolveTransitiveDependencies(Execute context)
@@ -58,7 +58,7 @@ public class ResolveTransitiveDependencies
 		super();
 		setContext(context);
 	}
-	
+
 	/**
 	 * Execute context to Resolve Transitive Dependencies.
 	 * @return A list of artifact results.
@@ -69,12 +69,12 @@ public class ResolveTransitiveDependencies
 		// A factory to boot the repository system and a repository system session.
 		RepositorySystemFactory factory = new RepositorySystemFactory
 			(
-				getContext().getLocalRepository(), 
+				getContext().getLocalRepository(),
 				getContext().getRemoteRepositories(),
 				getContext().isOffline(),
 				getContext().getVerbose().atLeast(Verbose.TRACE)
 			);
-		
+
 		// The main entry point to the repository system.
 		RepositorySystem system = factory.newRepositorySystem();
 
@@ -85,9 +85,9 @@ public class ResolveTransitiveDependencies
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 		for (String dependency : getContext().getIncludeDependencies())
 		{
-			// A specific artifact with the specified coordinates. 
+			// A specific artifact with the specified coordinates.
 			// If not specified in the artifact coordinates, the
-			// artifact's extension defaults to {@code jar} and 
+			// artifact's extension defaults to {@code jar} and
 			// classifier to an empty string.
 			Artifact artifact = new DefaultArtifact( dependency );
 			// Set the artifact scope to compile and run the script.
@@ -98,24 +98,24 @@ public class ResolveTransitiveDependencies
 		// In offline mode, this list is used to verify remote availability.
 		List<RemoteRepository> remoteRepositories = factory.newRemoteRepositories();
 
-		// Create a request to collect the transitive dependencies and to build a dependency graph. 
+		// Create a request to collect the transitive dependencies and to build a dependency graph.
 		Dependency root = null;
 		CollectRequest collectRequest = new CollectRequest(root, dependencies, remoteRepositories);
 
 		// A filter to include/exclude dependency nodes during other operations.
 		// Set the artifact scope to compile and run the script.
-		DependencyFilter classpathFlter = 
+		DependencyFilter classpathFlter =
 			DependencyFilterUtils.classpathFilter( JavaScopes.COMPILE );
 
 		// A request to resolve transitive dependencies.
 		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, classpathFlter);
 
-		// Resolve and collect the transitive dependencies of an artifact. 
+		// Resolve and collect the transitive dependencies of an artifact.
 		// Dump Console Dependency Graph
 		DependencyResult dependencyResult = system.resolveDependencies(session, dependencyRequest);
 		List<ArtifactResult> artifactResults = dependencyResult.getArtifactResults();
 		dependencyResult.getRoot().accept(new ConsoleDependencyGraphDumper());
-		
+
 		return artifactResults;
 	}
 }
