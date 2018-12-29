@@ -159,6 +159,7 @@ public class JavaCodeScriptEngineFactory
 		buf.append(getClassName());
 		buf.append("\n{\n");
 		buf.append("\tpublic static void main(String[] args)\n");
+		buf.append("\t\tthrows Exception\n");
 		buf.append("\t{\n");
 		if (statements.length != 0)
 		{
