@@ -6,16 +6,16 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * This dynamic class loader extends {@link URLClassLoader} to expose 
+ * This dynamic class loader extends {@link URLClassLoader} to expose
  * the addURL(URL) method for public access. It assumes the system
- * class loader is a URLClassLoader. This could fail if there is a 
+ * class loader is a URLClassLoader. This could fail if there is a
  * SecurityManager.
- *	
- * It is used to load classes and resources from a search path of URLs 
- * referring to both JAR files and directories. Any URL that ends with 
- * a '/' is assumed to refer to a directory. Otherwise, the URL is 
+ *
+ * It is used to load classes and resources from a search path of URLs
+ * referring to both JAR files and directories. Any URL that ends with
+ * a '/' is assumed to refer to a directory. Otherwise, the URL is
  * assumed to refer to a JAR file which will be opened as needed.
- * 
+ *
  * @author Rick O'Sullivan
  */
 public class DynamicURLClassLoader
@@ -27,13 +27,13 @@ public class DynamicURLClassLoader
 	 */
 	public DynamicURLClassLoader()
 	{
-		this( (URLClassLoader) ClassLoader.getSystemClassLoader() );
+		this(new URLClassLoader(new URL[0], ClassLoader.getPlatformClassLoader()));
 	}
 
 	/**
-	 * Constructs a new DynanmicURLClassLoader for the specified 
+	 * Constructs a new DynanmicURLClassLoader for the specified
 	 * <code>URLClassLoader</code>.
-	 * 
+	 *
 	 * @param urlClassLoader The class loader providing existing URLs.
 	 */
 	public DynamicURLClassLoader(URLClassLoader urlClassLoader)
@@ -42,8 +42,8 @@ public class DynamicURLClassLoader
 	}
 
 	/**
-	 * Constructs a new DynanmicURLClassLoader for the given URLClassLoader. 
-	 * 
+	 * Constructs a new DynanmicURLClassLoader for the given URLClassLoader.
+	 *
 	 * @param urlClassLoader The class loader providing existing URLs.
 	 * @param parent The parent class loader for delegation
 	 */

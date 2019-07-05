@@ -5,7 +5,7 @@ JARVERS="1.0.1-SNAPSHOT"
 #JARPATH="${HOME}/.m2/repository/org/patrodyne/patrodyne-scripting-javabang/${JARVERS}"
 JARPATH="target"
 JARNAME="patrodyne-scripting-javabang-${JARVERS}-shaded.jar"
-java \
+java ${JAVABANG_OPTS} \
 	-Dorg.patrodyne.scripting.java.sourcepath="${SOURCEPATH}" \
 	-Dorg.patrodyne.scripting.java.classpath="${CLASSPATH}" \
 	-jar "${JARPATH}/${JARNAME}" "$@"

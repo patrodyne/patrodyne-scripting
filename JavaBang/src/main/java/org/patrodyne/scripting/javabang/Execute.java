@@ -225,7 +225,7 @@ public class Execute implements ScriptReader
 	public boolean isOffline()
 	{
 		if ( offline == null )
-			offline = new Boolean(getProperties().getProperty("offline", "false"));
+			offline = Boolean.parseBoolean(getProperties().getProperty("offline", "false"));
 		return offline;
 	}
 
@@ -465,7 +465,7 @@ public class Execute implements ScriptReader
 	// Get the 'addmain' directive as a boolean.
 	private boolean getAddMain()
 	{
-		return new Boolean(getProperties().getProperty(JavaCodeScriptEngine.ADDMAIN, "false"));
+		return Boolean.parseBoolean(getProperties().getProperty(JavaCodeScriptEngine.ADDMAIN, "false"));
 	}
 
 	// Generate classpath from resolved artifacts.
