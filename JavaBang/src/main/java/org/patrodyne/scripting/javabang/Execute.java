@@ -81,7 +81,7 @@ public class Execute implements ScriptReader
 	// Directive Default Values
 	private static String DEFAULT_LOCAL_REPOSITORY =
 		System.getProperty("user.home")+"/.m2/repository";
-	private static String DEFAULT_REMOTE_REPOSITORY = "http://repo1.maven.org/maven2/";
+	private static String DEFAULT_REMOTE_REPOSITORY = "https://repo1.maven.org/maven2/";
 
 	private String localRepository;
 	/**

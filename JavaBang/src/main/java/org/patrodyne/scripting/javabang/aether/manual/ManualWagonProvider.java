@@ -5,6 +5,7 @@ package org.patrodyne.scripting.javabang.aether.manual;
 
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.http.LightweightHttpWagon;
+import org.apache.maven.wagon.providers.http.LightweightHttpsWagon;
 import org.eclipse.aether.connector.wagon.WagonProvider;
 
 /**
@@ -13,15 +14,28 @@ import org.eclipse.aether.connector.wagon.WagonProvider;
 public class ManualWagonProvider
 	implements WagonProvider
 {
+	@Override
 	public Wagon lookup( String roleHint )
 		throws Exception
 	{
-		if ( "http".equals( roleHint ) )
-			return new LightweightHttpWagon();
+//		LightweightHttpWagonAuthenticator authenticator = new LightweightHttpWagonAuthenticator();
+		if ( "https".equals( roleHint ) )
+		{
+			LightweightHttpsWagon wagon = new LightweightHttpsWagon();
+//			wagon.setAuthenticator(authenticator);
+			return wagon;
+		}
+		else if ( "http".equals( roleHint ) )
+		{
+			LightweightHttpWagon wagon =  new LightweightHttpWagon();
+//			wagon.setAuthenticator(authenticator);
+			return wagon;
+		}
 		else
 			return null;
 	}
 
+	@Override
 	public void release( Wagon wagon )
 	{
 		// No action

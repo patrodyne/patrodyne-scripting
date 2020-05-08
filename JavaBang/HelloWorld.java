@@ -1,5 +1,5 @@
 #!./javabang
-//@ http://repo1.maven.org/maven2/
+//@ https://repo1.maven.org/maven2/
 //: target/local/repository
 //+ org.apache.commons:commons-lang3:3.1
 //= offline=false
